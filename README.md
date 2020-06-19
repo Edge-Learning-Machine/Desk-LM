@@ -20,13 +20,18 @@ We are working so that [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk
 F., Sakr, F., Bellotti, R., Berta, A., De Gloria, "Machine Learning on Mainstream Microcontrollers," Sensors 2020, 20, 2638.
 https://www.mdpi.com/1424-8220/20/9/2638
 
-## Usage
+## Getting started
 
 ### Input
 
-The command line expects two input parameters (see launch.json):
+The command line expects the path to .json files specifying:
+- dataset
+- estimator
+- preprocessing
+- validation
+- output
 
--a < algorithm_name>
+-d <path_to_dataset_config>.json
 
 Currently, we support SVM, K-nn, ANN, DT.
 
@@ -98,6 +103,9 @@ float 32 data are used
 ## Run
 python main.py -d <dataset_name> -a <algo_name>
 
-## Version
-Currently tested with Python 3.6, Keras 2.2.4, Pandas 0.25.2, and Tensorflow 1.8.0, which is needed for importing the ANN model in Cube-AI
+## Package versions
+Please see the Desk-LM.3.6.10.yml file. Python 3.6, and Keras 2.2.4, which is needed for importing the ANN model in Cube-AI
+
+## License
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Edge-Learning-Machine/Desk-LM-new/blob/master/LICENSE) file for details
 
