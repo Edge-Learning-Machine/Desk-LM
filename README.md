@@ -8,11 +8,11 @@ Desk-LM is a python environment for training machine learning models. It current
 
 We are extending the library to other algorithms, also unsupervised. Your voluntary contribution is welcome.
 
-The user can specify a `.csv` dataset, an algorithm and a set of parameter values, so to train and select the best model and export it for use on edge devices, by exploiting the twin tool [Micro-LM](https://github.com/Edge-Learning-Machine/Micro-LM).
+The user can specify a `.csv` dataset, an algorithm and a set of parameter values, so to train and select the best model and export it for use on edge devices, by exploiting the twin tool [`Micro-LM`](https://github.com/Edge-Learning-Machine/Micro-LM).
 
 For `ANNs`, [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) outputs the model in `hdf5` file format, to be imported by `STM32 CubeAI`, together with .c and .h files for pre-processing and for testing the whole dataset performance on the microcontroller (STM32 Nucleo boards only).
 
-For all the other algorithms, [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) produces .c and .h that will be used as source files in a [Micro-LM](https://github.com/Edge-Learning-Machine/Micro-LM) project for optimzed memory footprint on edge devices. They contain the parameters of the selected ML model.
+For all the other algorithms, [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) produces .c and .h that will be used as source files in a [`Micro-LM`](https://github.com/Edge-Learning-Machine/Micro-LM) project for optimzed memory footprint on edge devices. They contain the parameters of the selected ML model.
 
 We are working so that [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) will output .json files so to allow dynamic usage by microcontrollers.
 
