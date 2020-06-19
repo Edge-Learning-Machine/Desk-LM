@@ -31,7 +31,20 @@ The command line expects the path to .json files specifying:
 - validation
 - output
 
+#### Dataset
 -d <path_to_dataset_config>.json
+
+The file has the following properties:
+- path, path to the .csv dataset file 
+- skip_columns, array of names of the columns to be skipped
+- target_column, name of the target column
+- sep, .csv file separator string/char
+- decimal, .csv file decimal number separator
+- test_size, integer (number of samples for the test), or float (fraction of the total samples to be used as test)
+- categorical_multiclass, boolean specifying whether the multiclass labels are categorical or not (i.e., ordinal)
+
+
+
 
 Currently, we support SVM, K-nn, ANN, DT.
 
