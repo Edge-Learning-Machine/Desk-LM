@@ -14,6 +14,8 @@ For `ANNs`, [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) output
 
 For all the other algorithms, [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) produces .c and .h that will be used as source files in a [`Micro-LM`](https://github.com/Edge-Learning-Machine/Micro-LM) project for optimzed memory footprint on edge devices. They contain the parameters of the selected ML model.
 
+[`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) relies on numpy, pandas, sk-learn and keras/Tensorflow.
+
 We are working so that [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) will output .json files so to allow dynamic usage by microcontrollers.
 
 ## Reference article for more infomation
@@ -32,9 +34,9 @@ The command line expects the path to .json files specifying:
 - output
 
 #### Dataset
--d <path_to_dataset_config>.json
+**-d <path_to_dataset_config_file>**
 
-The file has the following properties:
+The .json file exposes the following properties:
 - path, path to the .csv dataset file 
 - skip_rows, number of rows to be skipped before the column names
 - skip_columns, array of names of the columns to be skipped
@@ -43,6 +45,40 @@ The file has the following properties:
 - decimal, .csv file decimal number separator
 - test_size, integer (number of samples for the test), or float (fraction of the total samples to be used as test)
 - categorical_multiclass, boolean specifying whether the multiclass labels are categorical or not (i.e., ordinal)
+
+**-e <path_to_estmator_config_file>**
+
+The .json file exposes the following properties:
+- estimator, name of the estimator. If not differently stated, all estimators are implemented through sk-learn. Currently supported estimators are:
+  - "KNeighborsClassifier"
+  - "KNeighborsRegressor"
+  - "DecisionTreeClassifier"
+  - "DecisionTreeRegressor"
+  - "LinearSVC"
+  - "LinearSVM"
+  - "ANNClassifier", Keras/Tensorflow implementation
+  - "ANNRegressor", Keras/Tensorflow implementation
+
+Each estimator type has its own configuration parameters.
+- k-NN
+  - 
+- DecisionTree
+  - max_depth (*), default: None
+  - min_samples_split (*), default: 2 
+  - min_samples_leaf (*), default: 1
+  - max_leaf_nodes (*), default: None
+  
+- SVM
+  -
+- ANN
+  -
+
+(*) for the sake of model selection and cross validation, for property <prop> it is possible to specify:
+- <prop>, a single value
+- <prop_array>, an array of values
+- <lower_limit>, a lower_limit for a value range
+- <lower_limit>, a upper_limit for a value range
+- <step>, step for a value range
 
 
 
