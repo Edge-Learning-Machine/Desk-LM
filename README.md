@@ -18,10 +18,6 @@ For all the other algorithms, [`Desk-LM`](https://github.com/Edge-Learning-Machi
 
 We are working so that [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) will output .json files so to allow dynamic usage by microcontrollers.
 
-## Reference article for more infomation
-F., Sakr, F., Bellotti, R., Berta, A., De Gloria, "Machine Learning on Mainstream Microcontrollers," Sensors 2020, 20, 2638.
-https://www.mdpi.com/1424-8220/20/9/2638
-
 ## Getting started
 
 ### Input
@@ -118,7 +114,9 @@ The .json file exposes the following properties:
 - training_set_cap, for k-NN, sets a limit to the number of training samples to be exported for the k-NN estimation. Can be either int (number of samples) or float (0-1), default: no cap 
 
 
-
+## Reference article for more infomation
+F., Sakr, F., Bellotti, R., Berta, A., De Gloria, "Machine Learning on Mainstream Microcontrollers," Sensors 2020, 20, 2638.
+https://www.mdpi.com/1424-8220/20/9/2638
 
 
 
