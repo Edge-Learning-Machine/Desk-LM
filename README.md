@@ -74,11 +74,11 @@ Each estimator type has its own configuration parameters:
   - hidden_layers, array of integers representing the size of each hidden layer, default: []
   
 (*) for the sake of model selection and cross validation, for property <prop> it is possible to specify (all values are integers, if not differently specified, as ANN dropout):
-- <prop>, a single value
+- < prop >, a single value
 - <prop_array>, an array of values
 - <lower_limit>, a lower_limit for a value range
 - <upper_limit>, a upper_limit for a value range
-- <step>, step for a value range
+- < step >, step for a value range
 
 Please refer to sk-learn and keras documentation for the details on the configuration parameters.
 
