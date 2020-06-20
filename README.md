@@ -73,7 +73,7 @@ Each estimator type has its own configuration parameters:
   - activation, array of strings (e.g., "relu", "tanh") for the activation function of the hidden layers, default: "relu"
   - hidden_layers, array of integers representing the size of each hidden layer, default: []
   
-(*) for the sake of model selection and cross validation, for property <prop> it is possible to specify (all values are integers, if not differently specified, as ANN dropout):
+(*) for the sake of model selection and cross validation, for this property <prop> it is possible to specify (all values are integers, if not differently specified, as ANN dropout):
 - < prop >, a single value
 - <prop_array>, an array of values
 - <lower_limit>, a lower_limit for a value range
