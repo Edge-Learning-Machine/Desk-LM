@@ -47,18 +47,18 @@ The .json file exposes the following properties:
 - categorical_multiclass, boolean specifying whether the multiclass labels are categorical or not (i.e., ordinal)
 
 #### Estimator
-**-e <path_to_estmator_config_file>**
+**-e <path_to_estimator_config_file>**
 
 The .json file exposes the following properties:
 - estimator, name of the estimator. If not differently stated, all estimators are implemented through sk-learn. Currently supported estimators are:
-  - "KNeighborsClassifier"
-  - "KNeighborsRegressor"
-  - "DecisionTreeClassifier"
-  - "DecisionTreeRegressor"
-  - "LinearSVC"
-  - "LinearSVM"
-  - "ANNClassifier", Keras/Tensorflow implementation
-  - "ANNRegressor", Keras/Tensorflow implementation
+  - KNeighborsClassifier
+  - KNeighborsRegressor
+  - DecisionTreeClassifier
+  - DecisionTreeRegressor
+  - LinearSVC
+  - LinearSVR
+  - ANNClassifier, Keras/Tensorflow implementation
+  - ANNRegressor, Keras/Tensorflow implementation
 
 Each estimator type has its own configuration parameters:
 - k-NN
@@ -67,19 +67,58 @@ Each estimator type has its own configuration parameters:
   - max_depth (*), default: None
   - min_samples_split (*), default: 2 
   - min_samples_leaf (*), default: 1
-  - max_leaf_nodes (*), default: None
-  
-- SVM
-  -
+  - max_leaf_nodes (*), default: None 
+- SVC/SVR
+  - C_exp (*), exponent of the C parameter, default 0
 - ANN
-  -
-
-(*) for the sake of model selection and cross validation, for property <prop> it is possible to specify:
+  - epochs (*), default: 10
+  - batch_size (*), default: 32 
+  - dropout (*), float between 0 and 1, default: 0
+  - activation, array of strings (e.g., "relu", "tanh") for the activation function of the hidden layers, default: "relu"
+  - hidden_layers, array of integers representing the size of each hidden layer, default: []
+  
+(*) for the sake of model selection and cross validation, for property <prop> it is possible to specify (all values are integers, if not differently specified, as ANN dropout):
 - <prop>, a single value
 - <prop_array>, an array of values
 - <lower_limit>, a lower_limit for a value range
-- <lower_limit>, a upper_limit for a value range
+- <upper_limit>, a upper_limit for a value range
 - <step>, step for a value range
+
+Please refer to sk-learn and keras documentation for the details on the configuration parameters.
+
+#### Preprocessing
+**-p <path_to_preprocessing_config_file>**
+
+The .json file exposes the following properties:
+- scale, array of strings specifying scalers (currently supported scalers: ""), default: no scaler
+- pca_values, array of numbers representing the principal components. It is possible to specify also the string "mle", default: no PCA 
+
+Please refer to sk-learn documentation for further details.
+
+#### Model selection
+**-s <path_to_model_selection_config_file>**
+
+The .json file exposes the following properties:
+- cv, cross validation schema, default: None, to use the default 5-fold cross validation 
+- scoring, default: 
+- verbose, verbosity level, default: 0
+
+Please refer to sk-learn documentation for further details.
+
+#### Output
+**-o <path_to_output_config_file>**
+
+The .json file exposes the following properties:
+- export_path, path to a directory where to export the output folders, default: no export. Output folders are structured like this:
+  - elm/source, for .c files
+  - elm/include, for .h files
+  - elm/model, for models, such as the ANN .h5 file
+- is_dataset_test, if files for a whole dataset test on the target devices are to be prepared, default: no dataset test (i.e., one shot estimation only)
+- dataset_test_size, sets a limit to the number of testing labels to be exported for the dataset test. Can be either int (number of labels) or float (0-1), default: 1
+- training_set_cap, for k-NN, sets a limit to the number of training samples to be exported for the k-NN estimation. Can be either int (number of samples) or float (0-1), default: no cap 
+
+
+
 
 
 
