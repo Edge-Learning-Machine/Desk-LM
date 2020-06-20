@@ -96,7 +96,19 @@ Please refer to sk-learn documentation for further details.
 
 The .json file exposes the following properties:
 - cv, cross validation schema, default: None, to use the default 5-fold cross validation 
-- scoring, default: 
+- scoring, scoring method for cross validation
+  - Regression problem, possible values:
+    - "mean_absolute_error"
+    - "mean_squared_error", default value for ANN
+    - "mean_squared_log_error'
+    - "root_mean_squared_error"
+    - "r2", default value for k-NN, LinearSVR, DecisionTree
+  - Classification problem, possible values:
+    - "accuracy", which is the default value
+    - "balanced_accuracy"
+    - "f1", "f1_micro", "f1_macro", "f1_samples", "f1_weighted"
+    - "precision", "precision_micro", "precision_macro", "precision_samples", "precision_weighted"
+    - "recall", "recall_micro", "recall_macro", "recalln_samples", "recall_weighted"
 - verbose, verbosity level, default: 0
 
 Please refer to sk-learn documentation for further details.
@@ -112,48 +124,6 @@ The .json file exposes the following properties:
 - is_dataset_test, if files for a whole dataset test on the target devices are to be prepared, default: no dataset test (i.e., one shot estimation only)
 - dataset_test_size, sets a limit to the number of testing labels to be exported for the dataset test. Can be either int (number of labels) or float (0-1), default: 1
 - training_set_cap, for k-NN, sets a limit to the number of training samples to be exported for the k-NN estimation. Can be either int (number of samples) or float (0-1), default: no cap 
-
-
-## Reference article for more infomation
-F., Sakr, F., Bellotti, R., Berta, A., De Gloria, "Machine Learning on Mainstream Microcontrollers," Sensors 2020, 20, 2638.
-https://www.mdpi.com/1424-8220/20/9/2638
-
-
-
-
-Currently, we support SVM, K-nn, ANN, DT.
-
--d <dataset_name>. The software expects a <dataset_name>.csv file in ../datasets/
-
-Numeric only datasets are accepted, by now.
-
-We have tried the software with the following datasets:
-Heart Disease UCI | Kaggle. Available online: http://www.kaggle.com/ronitf/heart-disease-uci 
-
-Boero, L.; Cello, M.; Marchese, M.; Mariconti, E.; Naqash, T.; Zappatore, S. Statistical fingerprint—Based intrusion detection system (SF-IDS). Int. J. Commun. Syst. 2017, 30, e3225.
-
-Fausto, A.; Marchese, M. Implementation Details to Reduce the Latency of an SDN Statistical Fingerprint-Based IDS. In Proceedings of the IEEE International Symposium on Advanced Electrical and Communication Technologies (ISAECT), Rome, Italy, 27–29 November 2019.
-
-http://www.fizyka.umk.pl/kis-old/projects/datasets.html#Sonar 
-
-Traffic, Driving Style and Road Surface Condition | Kaggle. Available online: http://www.kaggle.com/gloseto/traffic-driving-style-road-surface-condition
-
-EnviroCar—Datasets—the Datahub. Available online: http://www.old.datahub.io/dataset/envirocar (accessed on 13 February 2020).
-
-Massoud, R.; Poslad, S.; Bellotti, F.; Berta, R.; Mehran, K.; Gloria, A.D. A fuzzy logic module to estimate a driver’s fuel consumption for reality-enhanced serious games. Int. J. Serious Games 2018, 5, 45–62.
-
-Massoud, R.; Bellotti, F.; Poslad, S.; Berta, R.; De Gloria, A. Towards a reality-enhanced serious game to promote eco-driving in the wild. In Games and Learning Alliance. GALA 2019. Lecture Notes in Computer Science; Liapis, A., Yannakakis, G., Gentile, M., Ninaus, M., Eds.; Springer: Berlin, Germany, 2019
-
-Search for and download air quality data | NSW Dept of Planning, Industry and Environment. Available online: http://www.dpie.nsw.gov.au/air-quality/search-for-and-download-air-quality-data (accessed on 13 February 2020).
-
-
-
-#### Configuration files
-config.py exposes the characteristics of the dataset to be processed (e.g., what the target column is), and the parameters to be analyzed for the pre-processing (e.g., 'mle' algorithm for automatic PCA) and for the selected algorithm training and cross-validation.
-
-For ANN only:
-- ./config/\<ds_name\>/activeFuncs.dat specifies the various activation functions that could be used in all the layers
-- ./config/\<ds_name\>/layerShape.dat specifies the possible shapes of the layers of the ANN.
 
 ### Output
 
@@ -197,3 +167,6 @@ Please see the Desk-LM.3.6.10.yml file. Python 3.6, and Keras 2.2.4, which is ne
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Edge-Learning-Machine/Desk-LM-new/blob/master/LICENSE) file for details
 
+## Reference article for more infomation
+F., Sakr, F., Bellotti, R., Berta, A., De Gloria, "Machine Learning on Mainstream Microcontrollers," Sensors 2020, 20, 2638.
+https://www.mdpi.com/1424-8220/20/9/2638
