@@ -46,6 +46,7 @@ The .json file exposes the following properties:
 - test_size, integer (number of samples for the test), or float (fraction of the total samples to be used as test)
 - categorical_multiclass, boolean specifying whether the multiclass labels are categorical or not (i.e., ordinal)
 
+#### Estimator
 **-e <path_to_estmator_config_file>**
 
 The .json file exposes the following properties:
@@ -59,9 +60,9 @@ The .json file exposes the following properties:
   - "ANNClassifier", Keras/Tensorflow implementation
   - "ANNRegressor", Keras/Tensorflow implementation
 
-Each estimator type has its own configuration parameters.
+Each estimator type has its own configuration parameters:
 - k-NN
-  - 
+  - n_neighbors (*), default: 5 
 - DecisionTree
   - max_depth (*), default: None
   - min_samples_split (*), default: 2 
