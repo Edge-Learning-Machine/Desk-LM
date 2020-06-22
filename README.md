@@ -125,6 +125,9 @@ The .json file exposes the following properties:
 - dataset_test_size, sets a limit to the number of testing labels to be exported for the dataset test. Can be either int (number of labels) or float (0-1), default: 1
 - training_set_cap, for k-NN, sets a limit to the number of training samples to be exported for the k-NN estimation. Can be either int (number of samples) or float (0-1), default: no cap 
 
+### Run
+python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> -p <output_config_file>
+
 ## Output
 Output files are also produced under the `out` diectory, with the following structure:
 - out/source, for .c files
@@ -146,9 +149,6 @@ Use function *preprocess(X)*, exposed by ELM.h, where X is the sample vector for
 
 ## Data type
 float 32 data are used
-
-## Run
-python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> -p <output_config_file>
 
 ## Package versions
 Please see the Desk-LM.3.6.10.yml file. Python 3.6, and Keras 2.2.4, which is needed for importing the ANN model in Cube-AI
