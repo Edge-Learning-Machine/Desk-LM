@@ -1,0 +1,4 @@
+{
+    "scale": ["StandardScaler"],
+    "pca_values": [1, "mle"]
+}

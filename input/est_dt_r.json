@@ -1,0 +1,9 @@
+{
+    "estimator": "DecisionTreeRegressor",
+    "max_depth_lowerlimit": 10,
+    "max_depth_upperlimit": 20,
+    "max_depth_step": 2,
+    "min_samples_split_array": [2, 3],
+    "min_samples_leaf": 1,
+    "max_leaf_nodes_array": [50, 80, 100]
+}

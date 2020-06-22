@@ -1,0 +1,5 @@
+{
+    "cv": 2,
+    "scoring": "root_mean_squared_error",
+    "verbose": 2
+}

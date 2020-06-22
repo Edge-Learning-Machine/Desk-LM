@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Python: main",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "-d",
+                "input/ds_heart.json",
+                //"input/ds_peugeot_207_01.json",
+                //"input/ds_nrg.json",
+                "-e",
+                //"input/est_ann_c.json",
+                //"input/est_ann_r.json",
+                //"input/est_dt_c.json",
+                //"input/est_dt_r.json",
+                //"input/est_knn_c.json",
+                //"input/est_knn_r.json",
+                "input/est_svm_c.json",
+                //"input/est_svm_r.json",
+                "-p",
+                "input/pp_1.json",
+                "-s",
+                //"input/ms_2.json",
+                "input/ms_2_no_sco.json",
+                //"input/ms_2_reg.json",
+                //"input/ms_2_reg.json",
+                "-o",
+                "input/output_1.json"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}

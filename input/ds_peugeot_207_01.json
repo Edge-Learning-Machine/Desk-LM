@@ -1,0 +1,9 @@
+{
+    "path": "./datasets/peugeot_207_01.csv",
+    "test_size": 0.2,
+    "target_column":"roadSurface",
+    "skip_columns":["traffic", "drivingStyle"],
+    "categorical_multiclass":true,
+    "sep":";",
+    "decimal":","
+}

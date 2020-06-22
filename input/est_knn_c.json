@@ -1,0 +1,4 @@
+{
+    "estimator": "KNeighborsClassifier",
+    "n_neighbors_array": [2, 4, 6]
+}

@@ -1,0 +1,11 @@
+experience.txt
+Instructions conda.txt
+.vscode/.ropeproject/
+__pycache__/
+datasets/energydata_complete_1f.csv
+datasets/heart - Copia.csv
+datasets/heart_blanks.csv
+docs/en.DM00570145.pdf
+input/ds_nrg_1f.json
+log/
+out/

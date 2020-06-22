@@ -1,0 +1,9 @@
+{
+    "path": "./datasets/energydata_complete.csv",
+    "test_size": 0.7,
+    "target_column":"appliances",
+    "skip_columns":["Date", "lights"],
+    "categorical_multiclass":true,
+    "sep":";",
+    "decimal":","
+}

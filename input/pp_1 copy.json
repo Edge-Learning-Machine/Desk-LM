@@ -1,0 +1,4 @@
+{
+    "scale": ["StandardScaler", "RobustScaler", "MinMaxScale", "QuantileScaler"],
+    "pca_values": [1, "mle"]
+}
