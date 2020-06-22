@@ -148,7 +148,12 @@ You need to add also ELM.h and Preprocess.c and Preprocess.h from [`Micro-LM`](h
 Use function *preprocess(X)*, exposed by ELM.h, where X is the sample vector for preprocessing
 
 ## Examples
-Example .json files are provided in the input dirctory.
+Example .json files are provided in the input dirctory. We adopt the following convention:
+- *ds_* is the prefix for dataset configuration files.
+- *pp_* for preprocessing
+- *est_* for estimator
+- *ms_* for model selection
+- *output_* for output
 
 Example .csv files are provided in the dataset/ directory.
 - Heart Disease UCI | Kaggle. Available online: http://www.kaggle.com/ronitf/heart-disease-uci
