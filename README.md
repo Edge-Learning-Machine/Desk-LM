@@ -165,7 +165,7 @@ Please see the Desk-LM.3.6.10.yml file. Python 3.6, and Keras 2.2.4, which is ne
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Edge-Learning-Machine/Desk-LM/LICENSE.md) file for details
 
 ## Contributing
-Please see [CONTRIBUTING.md](https://github.com/Edge-Learning-Machine/Desk-LM/CONTRIBUTING.md)
+Please see [CONTRIBUTING.md](https://github.com/Edge-Learning-Machine/Desk-LM/docs/CONTRIBUTING.md)
 
 ## Reference article for more infomation
 F., Sakr, F., Bellotti, R., Berta, A., De Gloria, "Machine Learning on Mainstream Microcontrollers," Sensors 2020, 20, 2638.
