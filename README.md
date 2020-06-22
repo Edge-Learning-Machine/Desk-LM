@@ -147,6 +147,14 @@ You need to add also ELM.h and Preprocess.c and Preprocess.h from [`Micro-LM`](h
 
 Use function *preprocess(X)*, exposed by ELM.h, where X is the sample vector for preprocessing
 
+## Examples
+Example .json files are provided in the input dirctory.
+
+Example .csv files are provided in the dataset/ directory.
+- Heart Disease UCI | Kaggle. Available online: http://www.kaggle.com/ronitf/heart-disease-uci
+- Traffic, Driving Style and Road Surface Condition | Kaggle. Available online: http://www.kaggle.com/gloseto/traffic-driving-style-road-surface-condition
+- Appliances energy prediction | UCI. Available online: https://data.world/uci/appliances-energy-prediction
+
 ## Data type
 float 32 data are used
 
