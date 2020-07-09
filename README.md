@@ -71,7 +71,7 @@ Each estimator type has its own configuration parameters:
   - batch_size (*), default: 32 
   - dropout (*), float between 0 and 1, default: 0
   - activation, array of strings (e.g., "relu", "tanh") for the activation function of the hidden layers, default: "relu"
-  - hidden_layers, array of integers representing the size of each hidden layer, default: []
+  - hidden_layers, array of array of integers representing the size of each hidden layer, default: []. Each inner array represents one ANN layer configuration (i.e., number of nodes for each layer) among those to be evaluated in the cross-validation
   
 (*) for the sake of model selection and cross validation, for this property <prop> it is possible to specify (all values are integers, if not differently specified, as ANN dropout):
 - < prop >, a single value
@@ -86,8 +86,8 @@ Please refer to sk-learn and keras documentation for the details on the configur
 **-p <path_to_preprocessing_config_file>**
 
 The .json file exposes the following properties:
-- scale, array of strings specifying scalers (currently supported scalers: ""), default: no scaler
-- pca_values, array of numbers representing the principal components. It is possible to specify also the string "mle", default: no PCA 
+- scale, array of strings specifying scalers (currently supported scalers: "StandardScaler", "MinMaxScaler"), default: no scaler
+- pca_values, array of numbers (integer or float between 0 and 1) representing the principal components. It is possible to specify also the string "mle", default: no PCA 
 
 Please refer to sk-learn documentation for further details.
 
