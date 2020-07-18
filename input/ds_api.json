@@ -1,0 +1,9 @@
+{
+    "path": "./datasets/heart.csv",
+    "target_column": "target",
+    "test_size": 0.1,
+    "skip_columns": [
+        "age",
+        "sex"
+    ]
+}
