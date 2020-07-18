@@ -76,7 +76,7 @@ for mean, stdev, param in zip(means, stds, params):
 
 
 def elm(id, app=None):
-    global zip_position, client, db, models, result
+    #global zip_position, client, db, models, result
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--dataset')
@@ -101,9 +101,7 @@ def elm(id, app=None):
 
         import utils.create_input_file as cif
         cif.create_input_file(result)
-        
-    
-    print(args)
+
 
     import sys
     print("Python version")
@@ -116,8 +114,7 @@ def elm(id, app=None):
     print(skl.__version__)
 
     if id != 0:
-        app.logger.info("Start ELM training")
-        models.update_one({'_id':id}, {'$set':{'status':"Training --> 0%"}})
+        models.update_one({'_id':id}, {'$set':{'status':"2: Training...0%"}})
 
     sys.path.insert(1, 'config')
     import Dataset as cds
@@ -249,12 +246,13 @@ def elm(id, app=None):
             toDirectory = f"{op.export_path}/dlm/model"
             copy_tree(fromDirectory, toDirectory)
 
+    if id != 0:
+        models.update_one({'_id':id}, {'$set':{'status':"2: Training...100%"}})
+
+        if result['webhook']:
+            requests.get(result.webhook)
+
     print('The end')
 
-    if id != 0:
-        app.logger.info("End ELM training")
-        models.update_one({'_id':id}, {'$set':{'status':"Training --> 100%"}})
-
 if __name__ == '__main__':
-    #elm("46456aca-77f7-4670-949f-fc129e0d79f3")
     elm(0)

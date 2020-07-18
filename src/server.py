@@ -20,7 +20,6 @@ models = db['models']
 
 model_parameters = ['e','p','s','o','webhook']
 
-status = ['No training dataset', 'Loaded dataset','Start training','End of training']
 
 def answer(content, status):
     if(status != 200):
@@ -50,7 +49,7 @@ def model():
 
     #aggiungo valori in risposta
     content['_id'] = str(uuid.uuid4())
-    content['status'] = status[0]
+    content['status'] = '0: Model uploaded'
     content['output'] = 'zip/'+ content['_id'] +'.zip'
     content['timestamp'] = str(datetime.now())
     #...
@@ -141,8 +140,7 @@ def training(id):
     if request.form.get('categorical_multiclass'):
         result['d']['categorical_multiclass'] = request.form.get('categorical_multiclass')
     
-    result['status'] = status[1]
-    #result['trainingset'] = name_csv
+    result['status'] = '1: CSV uploaded'
     try:
         models.update_one({'_id':id}, {'$set':result})
     except:
@@ -150,11 +148,6 @@ def training(id):
     #...
 
     return answer(result, 200)
-    
-
-'''
-@app.route('/model/<id>/<output>', methods=['POST'])
-'''
 
 
 @app.route('/model/<id>', methods=['PUT'])
@@ -181,7 +174,7 @@ def put(id):
     if not content['evaluate']:
         return answer("Evaluate must be true to begin training", 400)
 
-    
+    result = models.update_one({'_id':id}, {'$set':{'status':'2: Start Training'}})
     # avvio thread per addestramento elm
     sys.path.append('./')
     import main
@@ -192,10 +185,15 @@ def put(id):
     return answer(result, 200)
 
 
+    '''
+    @app.route('/model/<id>/<output>', methods=['POST'])
+    '''
+
+
 @app.errorhandler(404)
 def notfound(error):
     return answer('Route not found', 404)
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=True, host='localhost', port=port)
