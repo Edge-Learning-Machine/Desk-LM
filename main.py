@@ -84,13 +84,14 @@ def elm(id, app=None):
     parser.add_argument('-e', '--estimator')
     parser.add_argument('-s', '--selection')
     parser.add_argument('-o', '--output')
+    args = parser.parse_args()
 
     if id != 0:
-        parser.parse_args(['--dataset', "input/ds_api.json"])
-        parser.parse_args(['--estimator', "input/est_api.json"])
-        parser.parse_args(['--preprocess', "input/pp_api.json"])
-        parser.parse_args(['--selection', "input/ms_api.json"])
-        parser.parse_args(['--output', "input/output_api.json"])
+        args.dataset =  "input/ds_api.json"
+        args.estimator = "input/est_api.json"
+        args.preprocess = "input/pp_api.json"
+        args.selection = "input/ms_api.json"
+        args.output = "input/output_api.json"
 
         client = MongoClient('localhost', 27017)
         db = client['elm']
@@ -100,8 +101,9 @@ def elm(id, app=None):
 
         import utils.create_input_file as cif
         cif.create_input_file(result)
-
-    args = parser.parse_args()
+        
+    
+    print(args)
 
     import sys
     print("Python version")

@@ -1,9 +1,9 @@
 {
-    "path": "./datasets/heart.csv",
+    "path": "datasets/f2e5ee81-5986-4d61-a55f-e2e15bc615ce.csv",
     "target_column": "target",
-    "test_size": 0.1,
     "skip_columns": [
         "age",
         "sex"
-    ]
+    ],
+    "test_size": 0.1
 }
