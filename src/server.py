@@ -33,7 +33,6 @@ def answer(content, status):
     return jsonify(content), status
 
 
-
 @app.route('/model', methods=['POST'])
 def set_model():
     if (not request.data):
@@ -48,7 +47,7 @@ def set_model():
     content = request.get_json()
 
     # verifico che richiesta abbia tutti i campi necessari
-    model_parameters = ['e','p','s','o','webhook']
+    model_parameters = ['e','p','s','o']
     for parameter in model_parameters:
         if not parameter in content:
             return answer("Missing parameter: '" + parameter + "'", 400)
@@ -89,8 +88,10 @@ def upload_csv(id):
     if not request.files.get('file'):
         return answer("Missing .csv file", 400)
     
-    if not request.form.get('target_column'):
-        return answer("Missing target_column parameter", 400)
+    model_parameters = ['target_column','test_size']
+    for parameter in model_parameters:
+        if not parameter in request.form:
+            return answer("Missing parameter: '" + parameter + "'", 400)
 
     try:
         result = collection.find_one({'_id':id})
@@ -102,7 +103,7 @@ def upload_csv(id):
 
     #Salva il file csv con il nuovo nome
     try:
-        name_csv = str(uuid.uuid4())+'.csv'
+        name_csv = result['_id']+'.csv'
         f = request.files['file']
         f.save('datasets/'+ name_csv)
     except:
@@ -112,14 +113,15 @@ def upload_csv(id):
     result['d'] = {}
     result['d']['path'] = 'datasets/' + name_csv
     result['d']['target_column'] = request.form['target_column']
+    result['d']['test_size'] = float(request.form['test_size'])
     
     vector_parameter = ['skip_rows', 'skip_columns']
     for parameter in vector_parameter:
         if request.form.get(parameter):
             result['d'][parameter] = request.form.getlist(parameter)
 
-    vector_parameter = ['sep', 'decimal','test_size','categorical_multiclass']
-    for parameter in vector_parameter:
+    scalar_parameter = ['sep', 'decimal','categorical_multiclass']
+    for parameter in scalar_parameter:
         if request.form.get(parameter):
             result['d'][parameter] = request.form.get(parameter)
     
@@ -158,23 +160,24 @@ def training(id):
         return answer("Evaluate must be true to begin training", 400)
 
     try:
-        result = collection.update_one({'_id':id}, {'$set':{'status':'2: Start Training'}})
+        collection.update_one({'_id':id}, {'$set':{'status':'2: Start Training'}})
+        result = collection.find_one({'_id':id})
     except:
         return answer('Database not connected', 400)
 
     # avvio thread per addestramento elm in parallelo
     sys.path.append('./')
     import main
-    x = threading.Thread(target=main.elm, args=(id,app,))
+    x = threading.Thread(target=main.elm, args=(id, client, data, ))
     x.start()
     ###
 
     return answer(result, 200)
 
 
-    '''
-    @app.route('/model/<id>/<output>', methods=['POST'])
-    '''
+@app.route('/model/<id>/<output>', methods=['POST'])
+def download(id, output):
+    return answer("POST output", 200)
 
 
 @app.errorhandler(404)

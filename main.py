@@ -75,8 +75,7 @@ for mean, stdev, param in zip(means, stds, params):
 '''
 
 
-def elm(id, app=None):
-    #global zip_position, client, db, models, result
+def elm(id, dbclient=None, dbdata=None):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--dataset')
@@ -93,10 +92,9 @@ def elm(id, app=None):
         args.selection = "input/ms_api.json"
         args.output = "input/output_api.json"
 
-        client = MongoClient('localhost', 27017)
-        db = client['elm']
-        models = db['models']
-        result = models.find_one({'_id':id})
+        cursor = dbclient[dbdata['database']]
+        collection = cursor[dbdata['collection']]
+        result = collection.find_one({'_id':id})
         zip_position = result['output']
 
         import utils.create_input_file as cif
@@ -114,7 +112,7 @@ def elm(id, app=None):
     print(skl.__version__)
 
     if id != 0:
-        models.update_one({'_id':id}, {'$set':{'status':"2: Training...0%"}})
+        collection.update_one({'_id':id}, {'$set':{'status':"2: Training...0%"}})
 
     sys.path.insert(1, 'config')
     import Dataset as cds
@@ -247,9 +245,8 @@ def elm(id, app=None):
             copy_tree(fromDirectory, toDirectory)
 
     if id != 0:
-        models.update_one({'_id':id}, {'$set':{'status':"2: Training...100%"}})
-
-        if result['webhook']:
+        collection.update_one({'_id':id}, {'$set':{'status':"2: Training...100%"}})
+        if 'webhook' in result:
             requests.get(result.webhook)
 
     print('The end')
