@@ -23,6 +23,7 @@ app = Flask(__name__)
 port = int(os.environ.get('PORT', 5000))
 
 client = MongoClient("mongodb://localhost:27017/")
+#client = MongoClient("mongodb://mymongo:27017/")
 cursor = client[data['database']]
 collection = cursor[data['collection']]
 
@@ -51,21 +52,21 @@ def set_model():
     for parameter in model_parameters:
         if not parameter in content:
             return answer("Missing parameter: '" + parameter + "'", 400)
-    #...
+
 
     #aggiungo valori in risposta
     content['_id'] = str(uuid.uuid4())
     content['status'] = '0: Model uploaded'
     content['output'] = 'zip/'+ content['_id'] +'.zip'
     content['timestamp'] = str(datetime.now())
-    #...
 
-    #inserisco nella collezione
+
+    #inserisco in mongodb
     try:
         collection.insert_one(content)
     except:
         return answer('Database not connected', 400)
-    #...
+
 
     return answer(content, 200)
 
@@ -84,34 +85,42 @@ def get_model(id):
 
 
 @app.route('/model/<id>/trainingset', methods=['POST'])
-def upload_csv(id):    
+def upload_csv(id):
+    #verifico che vi sia il file csv
     if not request.files.get('file'):
         return answer("Missing .csv file", 400)
     
+
+    #verifico che vi siano i parametri necessari
     model_parameters = ['target_column','test_size']
     for parameter in model_parameters:
         if not parameter in request.form:
             return answer("Missing parameter: '" + parameter + "'", 400)
 
+    #recupero da mongodb 
     try:
         result = collection.find_one({'_id':id})
     except:
         return answer('Database not connected', 400)
 
+    #se id non esiste
     if not result:
         return answer("Model not existing", 400)
 
     #Salva il file csv con il nuovo nome
     try:
-        name_csv = result['_id']+'.csv'
+        file_name = result['_id']+'.csv'
         f = request.files['file']
-        f.save('datasets/'+ name_csv)
+        file_path = os.path.join('datasets/', file_name)
+        #file_path = os.path.join('/datasets/', file_name)
+        f.save(file_path)
     except:
-        return answer("Error uploading the file", 400)
-    #...
+        return answer("Error uploading file csv", 400)
 
+
+    #aggiungo configurazione dataset
     result['d'] = {}
-    result['d']['path'] = 'datasets/' + name_csv
+    result['d']['path'] = 'datasets/' + file_name
     result['d']['target_column'] = request.form['target_column']
     result['d']['test_size'] = float(request.form['test_size'])
     
@@ -125,8 +134,10 @@ def upload_csv(id):
         if request.form.get(parameter):
             result['d'][parameter] = request.form.get(parameter)
     
+    #aggiorno lo stato
     result['status'] = '1: CSV uploaded'
 
+    #aggiorno mongodb
     try:
         collection.update_one({'_id':id}, {'$set':result})
     except:
@@ -146,19 +157,23 @@ def training(id):
     except ValueError as e:
         return answer('Request format not in valid JSON: ' + e, 400)
 
+    #recupero modello da mongodb
     try:
         result = collection.find_one({'_id':id})
     except:
         return answer('Database not connected', 400)
 
+    #verifico che modello esista
     if not result:
         return answer("Model not existing", 400)
 
     content = request.get_json()
 
+    #verifico body
     if not content['evaluate']:
         return answer("Evaluate must be true to begin training", 400)
 
+    #aggiorno stato e mongodb
     try:
         collection.update_one({'_id':id}, {'$set':{'status':'2: Start Training'}})
         result = collection.find_one({'_id':id})
@@ -168,8 +183,13 @@ def training(id):
     # avvio thread per addestramento elm in parallelo
     sys.path.append('./')
     import main
-    x = threading.Thread(target=main.elm, args=(id, client, data, ))
-    x.start()
+    thread = threading.Thread(target=main.elm, args=(id, app, collection, ))
+    thread.start()
+    '''
+    import prova
+    thread = threading.Thread(target=prova.prova, args=(id, app, collection, ))
+    thread.start()
+    '''
     ###
 
     return answer(result, 200)

@@ -1,13 +1,23 @@
+import time
 from pymongo import MongoClient
-import os
+import requests
+from flask import Flask, request, jsonify, send_file, Response
 
+def prova(id, app=None, collection=None):
 
-client = MongoClient(
-    os.environ['DB_PORT_27017_TCP_ADDR'],
-    27017)
-db = client.elm
+    app.logger.info("Start ELM training")
+    collection.update_one({'_id':id}, {'$set':{'status':"2: Training...0%"}})
 
-_items = db.models.find()
-items = [item for item in _items]
+    ### HERE ELM
+    time.sleep(10)
+    ###
 
-print(items)
+    app.logger.info("End ELM training")
+    collection.update_one({'_id':id}, {'$set':{'status':"2: Training...100%"}})
+    
+    ###
+    result = collection.find_one({'_id':id})
+    if 'webhook' in result:
+        requests.get(result.webhook)
+
+    return 0

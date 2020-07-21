@@ -2,6 +2,7 @@ import argparse
 import logger as lg
 import numpy as np
 from pymongo import MongoClient
+from flask import Flask, request, jsonify, send_file, Response
 import requests
 import zipfile
 import os
@@ -75,7 +76,7 @@ for mean, stdev, param in zip(means, stds, params):
 '''
 
 
-def elm(id, dbclient=None, dbdata=None):
+def elm(id, app=None, collection=None):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--dataset')
@@ -92,12 +93,12 @@ def elm(id, dbclient=None, dbdata=None):
         args.selection = "input/ms_api.json"
         args.output = "input/output_api.json"
 
-        cursor = dbclient[dbdata['database']]
-        collection = cursor[dbdata['collection']]
         result = collection.find_one({'_id':id})
         zip_position = result['output']
 
-        import utils.create_input_file as cif
+        import sys
+        sys.path.insert(1, 'utils')
+        import create_input_file as cif
         cif.create_input_file(result)
 
 
@@ -112,6 +113,7 @@ def elm(id, dbclient=None, dbdata=None):
     print(skl.__version__)
 
     if id != 0:
+        app.logger.info("Starting ELM training")
         collection.update_one({'_id':id}, {'$set':{'status':"2: Training...0%"}})
 
     sys.path.insert(1, 'config')
@@ -245,6 +247,7 @@ def elm(id, dbclient=None, dbdata=None):
             copy_tree(fromDirectory, toDirectory)
 
     if id != 0:
+        app.logger.info("Ending ELM training")
         collection.update_one({'_id':id}, {'$set':{'status':"2: Training...100%"}})
         if 'webhook' in result:
             requests.get(result.webhook)
