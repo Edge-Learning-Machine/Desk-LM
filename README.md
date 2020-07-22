@@ -28,6 +28,8 @@ The command line expects the path to .json files specifying:
 - preprocessing
 - validation
 - output
+- prediction
+- storage
 
 #### Dataset configuration
 **-d <path_to_dataset_config_file>**
@@ -125,8 +127,24 @@ The .json file exposes the following properties:
 - dataset_test_size, sets a limit to the number of testing labels to be exported for the dataset test. Can be either int (number of labels) or float (0-1), default: 1
 - training_set_cap, for k-NN, sets a limit to the number of training samples to be exported for the k-NN estimation. Can be either int (number of samples) or float (0-1), default: no cap 
 
+#### Prediction configuration
+**-predict <path_to_predict_config_file>**
+
+The .json file exposes the following properties:
+- model_id, the uuid of the model to be loaded on the server to make the prediction
+- samples, an array of samples to be predicted
+
+#### Storage configuration
+**--store**
+
+The program stores the estimator in the "./storage/" directory. It provides an uuid for future retrieval for predictions
+
 ### Run
-python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> -p <output_config_file>
+python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> -o <output_config_file>
+
+python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> --store
+
+python main.py --predict <predict_config_file>
 
 ## Output
 Output files are also produced under the `out` diectory, with the following structure:
@@ -152,6 +170,7 @@ Example .json files are provided in the input dirctory. We adopt the following c
 - *est_* for estimator
 - *ms_* for model selection
 - *output_* for output
+- *pr_* for predicting
 
 Example .csv files are provided in the dataset/ directory.
 - Heart Disease UCI | Kaggle. Available online: http://www.kaggle.com/ronitf/heart-disease-uci
