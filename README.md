@@ -1,5 +1,5 @@
 # Desk-LM
-Desk-LM is a python environment for training machine learning models. It currently implements the following ML algorithms:
+Desk-LM is a python environment for training machine learning models (and make predictions as well). It currently implements the following ML algorithms:
 
 - `Linear SVM`
 - `Decision Tree`
