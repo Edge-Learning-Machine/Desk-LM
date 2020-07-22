@@ -140,10 +140,13 @@ The .json file exposes the following properties:
 The program stores the estimator in the "./storage/" directory. It provides an uuid for future retrieval for predictions
 
 ### Run
+- For computing a model and generating files for deployment on Micro-LM (or an .h5 file for neural networks)
 python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> -o <output_config_file>
 
+- For computing and storing a model
 python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> --store
 
+- For predicting a set of samples with a trained model
 python main.py --predict <predict_config_file>
 
 ## Output
