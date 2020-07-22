@@ -1,16 +1,19 @@
 version: "3"
 services:
-    mymongo:
-        image: "mongo"
-
-    myreader:
+    api:
         build: .
+        container_name: api
         depends_on: 
-            - mymongo
+            - mongodb
         ports:
-            - "5001:5001"
+            - "5000:5000"
         volumes:
-            - datasets/
-            - input/
-            - out/
-            - zip/
+            - /datasets/
+            - /input/
+            - /out/
+            - /zip/
+    mongodb:
+        container_name: mongodb
+        image: mongo
+        ports:
+            - "27017:27017"

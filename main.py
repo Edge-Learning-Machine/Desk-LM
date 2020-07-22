@@ -1,8 +1,6 @@
 import argparse
 import logger as lg
 import numpy as np
-from pymongo import MongoClient
-from flask import Flask, request, jsonify, send_file, Response
 import requests
 import zipfile
 import os
@@ -87,11 +85,11 @@ def elm(id, app=None, collection=None):
     args = parser.parse_args()
 
     if id != 0:
-        args.dataset =  "input/ds_api.json"
-        args.estimator = "input/est_api.json"
-        args.preprocess = "input/pp_api.json"
-        args.selection = "input/ms_api.json"
-        args.output = "input/output_api.json"
+        args.dataset =  "/input/ds_api.json"
+        args.estimator = "/input/est_api.json"
+        args.preprocess = "/input/pp_api.json"
+        args.selection = "/input/ms_api.json"
+        args.output = "/input/output_api.json"
 
         result = collection.find_one({'_id':id})
         zip_position = result['output']
@@ -121,24 +119,32 @@ def elm(id, app=None, collection=None):
     try:
         ds = cds.Dataset(args.dataset)
     except ValueError as err:
+        if app:
+            app.logger.info(err)
         quit(err)
-
+    
     import Estimator as ce
     try:
         esti = ce.Estimator.create(args.estimator, ds)
     except ValueError as err:
+        if app:
+            app.logger.info(err)
         quit(err)
 
     import Preprocess as pp
     try:
         prep = pp.Preprocess(args.preprocess)
     except ValueError as err:
+        if app:
+            app.logger.info(err)
         quit(err)
 
     import ModelSelection as ms
     try:
         ms = ms.ModelSelection(args.selection, esti)
     except ValueError as err:
+        if app:
+            app.logger.info(err)
         quit(err)
 
     # lg.initLogger(args.dataset, args.estimator)
@@ -247,7 +253,7 @@ def elm(id, app=None, collection=None):
             copy_tree(fromDirectory, toDirectory)
 
     if id != 0:
-        app.logger.info("Ending ELM training")
+        app.logger.info("Ended ELM training")
         collection.update_one({'_id':id}, {'$set':{'status':"2: Training...100%"}})
         if 'webhook' in result:
             requests.get(result.webhook)

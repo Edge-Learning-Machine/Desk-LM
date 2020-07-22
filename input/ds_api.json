@@ -1,5 +1,5 @@
 {
-    "path": "datasets/89a6886b-d9d9-4c05-be17-c47260ce2ec0.csv",
+    "path": "datasets/c79b2b55-0c60-4f8c-aadd-de28fe3dad32.csv",
     "target_column": "target",
     "test_size": 0.1,
     "skip_columns": [
