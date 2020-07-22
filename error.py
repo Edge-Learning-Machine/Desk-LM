@@ -12,5 +12,6 @@ errors = {
     'output_config':'Output configuration error',
     'output_permission': 'Could not export the files. There could be an open file, or dir in File Explorer',
     'ann_config':'Neural network configuration error',
-    'unknown_scoring_attribute':'Scoring attribute unknown for this estimator: '
+    'unknown_scoring_attribute':'Scoring attribute unknown for this estimator: ',
+    'predict_config':'Predict configuration error',
 }

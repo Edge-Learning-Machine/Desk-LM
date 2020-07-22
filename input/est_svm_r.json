@@ -1,5 +1,5 @@
 {
     "estimator": "LinearSVR",
-    "C_lower_exp": -4,
-    "C_upper_exp": 2
+    "C_exp_lowerlimit": -4,
+    "C_exp_upperlimit": 2
 }
