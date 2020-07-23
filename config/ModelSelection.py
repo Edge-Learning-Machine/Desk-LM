@@ -26,6 +26,8 @@ class ModelSelection(object):
 
     # Constructor
     def __init__(self, jsonFilePath, estimator):
+        self.cv = None
+        self.verbose = 0
         if jsonFilePath != None:
             try:
                 with open(jsonFilePath) as json_file:
@@ -49,23 +51,18 @@ class ModelSelection(object):
                     print(message)
                     raise ValueError(error.errors['modelselection_config'])
         else:
-            self.cv = None
             self.assign_default_values(estimator)
 
     def parse(self, jsonData, estimator):
         if 'cv' in jsonData:
             self.cv = jsonData['cv']
-        else:
-            self.cv = None
         self.process_scoring_param(jsonData, estimator)      
 
     def process_scoring_param(self, jsonData, estimator):
         import sklearn.metrics as metrics
         
         if 'verbose' in jsonData:
-            self.verbose = jsonData['verbose']
-        else:
-            self.verbose = 0
+            self.verbose = jsonData['verbose']            
         if 'scoring' in jsonData:
             self.scoring = jsonData['scoring']
             if estimator.is_regr:
