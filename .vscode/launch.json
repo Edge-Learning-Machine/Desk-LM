@@ -24,18 +24,18 @@
                 //"input/est_knn_r.json",
                 "input/est_svm_c.json",
                 //"input/est_svm_r.json",
-                "-p",
-                "input/pp_1.json",
-                "-s",
+                //"-p",
+                ///"input/pp_1.json",
+                //"-s",
                 //"input/ms_2.json",
-                "input/ms_2_no_sco.json",
+                ///"input/ms_2_no_sco.json",
                 //"input/ms_2_reg.json",
                 //"input/ms_2_reg.json",
                 //"-o",
                 //"input/output_1.json"
                 //"--store"
-                "--predict",
-                "input/pr_heart_svm.json"
+                //"--predict",
+                //"input/pr_heart_svm.json"
             ],
             "console": "integratedTerminal"
         }

@@ -35,31 +35,32 @@ class Preprocess(object):
 
     # Constructor
     def __init__(self, jsonFilePath):
-        try:
-            with open(jsonFilePath) as json_file:
-                try:
-                    jsonData = json.load(json_file)
-                    validate(instance=jsonData, schema=preprocessSchema)
-                except jsonschema.exceptions.ValidationError as err:
-                    template = "An exception of type {0} occurred. Arguments: {1!r}"
-                    message = template.format(type(err).__name__, err.args)
-                    print(message)
-                    raise ValueError(error.errors['preprocess_config'])
-                except ValueError as err:
-                    template = "An exception of type {0} occurred. Arguments: {1!r}"
-                    message = template.format(type(err).__name__, err.args)
-                    print(message)
-                    raise ValueError(error.errors['preprocess_config'])
-                self.parse(jsonData)
-        except FileNotFoundError as err:
-                template = "An exception of type {0} occurred. Arguments: {1!r}"
-                message = template.format(type(err).__name__, err.args)
-                print(message)
-                raise ValueError(error.errors['preprocess_config'])
-
-    def parse(self, jsonData):
         self.scalers = []
         self.pca_values = []
+        if jsonFilePath != None:
+            try:
+                with open(jsonFilePath) as json_file:
+                    try:
+                        jsonData = json.load(json_file)
+                        validate(instance=jsonData, schema=preprocessSchema)
+                    except jsonschema.exceptions.ValidationError as err:
+                        template = "An exception of type {0} occurred. Arguments: {1!r}"
+                        message = template.format(type(err).__name__, err.args)
+                        print(message)
+                        raise ValueError(error.errors['preprocess_config'])
+                    except ValueError as err:
+                        template = "An exception of type {0} occurred. Arguments: {1!r}"
+                        message = template.format(type(err).__name__, err.args)
+                        print(message)
+                        raise ValueError(error.errors['preprocess_config'])
+                    self.parse(jsonData)
+            except FileNotFoundError as err:
+                    template = "An exception of type {0} occurred. Arguments: {1!r}"
+                    message = template.format(type(err).__name__, err.args)
+                    print(message)
+                    raise ValueError(error.errors['preprocess_config'])
+
+    def parse(self, jsonData):
         if jsonData['scale']!=None:
             for scaler in jsonData['scale']:
                 if scaler in possible_scalers:

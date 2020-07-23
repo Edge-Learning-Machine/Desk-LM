@@ -34,9 +34,11 @@ if args.predict != None:
         pr = pred.Predict(args.predict)
     except ValueError as err:
         quit(err)
+    
     mod = joblib.load('./storage/' + pr.model_id + '.pkl')
     p = mod.predict(pr.samples)
     print(p)
+
 else:
     sys.path.insert(1, 'config')
     import Dataset as cds
@@ -92,7 +94,7 @@ else:
     import sklearn.metrics as metrics
     if hasattr(ms, 'metrics_average'):
         score = getattr(metrics, ms.metrics)(y_test, y_pred, average=ms.metrics_average)
-        print(f'{cv.metrics}, average={ms.metrics_average} in testing set: {score}')
+        print(f'{ms.metrics}, average={ms.metrics_average} in testing set: {score}')
     else:
         if hasattr(ms, 'is_RMSE'):
             score = getattr(metrics, ms.metrics)(y_test, y_pred, squared=not ms.is_RMSE)
