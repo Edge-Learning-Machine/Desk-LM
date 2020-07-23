@@ -128,7 +128,7 @@ The .json file exposes the following properties:
 - training_set_cap, for k-NN, sets a limit to the number of training samples to be exported for the k-NN estimation. Can be either int (number of samples) or float (0-1), default: no cap 
 
 #### Prediction configuration
-**-predict <path_to_predict_config_file>**
+**--predict <path_to_predict_config_file>**
 
 The .json file exposes the following properties:
 - model_id, the uuid of the model to be loaded on the server to make the prediction
