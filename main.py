@@ -256,7 +256,9 @@ def elm(id, app=None, collection=None):
         app.logger.info("Ended ELM training")
         collection.update_one({'_id':id}, {'$set':{'status':"2: Training...100%"}})
         if 'webhook' in result:
-            requests.get(result.webhook)
+            app.logger.info('Sending status to ' + result['webhook'])
+            requests.get(result['webhook'])
+            
 
     print('The end')
 

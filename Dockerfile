@@ -17,8 +17,6 @@ COPY logger.py /app
 COPY main.py /app
 COPY README.md /app
 
-EXPOSE 5001
-
 CMD ["python3", "server.py"]
 
 #COPY requirements.txt /

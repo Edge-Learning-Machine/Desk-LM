@@ -14,18 +14,24 @@ import threading
 import sys
 
 
-data = {
-    "database": "elm",
+database = {
+    "url": "mongodb://mongodb:27017/", 
+    #"url": "mongodb://localhost:27017/",
+    "name": "elm",
     "collection": "models"
+}
+
+path = {
+    "output": "/zip/",
+    "datasets": "/datasets/"
 }
 
 app = Flask(__name__)
 port = int(os.environ.get('PORT', 5000))
 
-#client = MongoClient("mongodb://localhost:27017/")
-client = MongoClient("mongodb://mongodb:27017/")
-cursor = client[data['database']]
-collection = cursor[data['collection']]
+client = MongoClient(database['url'])
+cursor = client[database['name']]
+collection = cursor[database['collection']]
 
 
 def answer(content, status):
@@ -57,7 +63,7 @@ def set_model():
     #aggiungo valori in risposta
     content['_id'] = str(uuid.uuid4())
     content['status'] = '0: Model uploaded'
-    content['output'] = '/zip/'+ content['_id'] +'.zip'
+    content['output'] = path['output'] + content['_id'] +'.zip'
     content['timestamp'] = str(datetime.now())
 
 
@@ -110,8 +116,7 @@ def upload_csv(id):
     try:
         file_name = result['_id']+'.csv'
         f = request.files['file']
-        #file_path = os.path.join('datasets/', file_name)
-        file_path = os.path.join('/datasets/', file_name)
+        file_path = os.path.join(path['datasets'], file_name)
         f.save(file_path)
     except:
         return answer("Error uploading file csv", 400)
@@ -119,7 +124,7 @@ def upload_csv(id):
 
     #aggiungo configurazione dataset
     result['d'] = {}
-    result['d']['path'] = '/datasets/' + file_name
+    result['d']['path'] = path['datasets'] + file_name
     result['d']['target_column'] = request.form['target_column']
     result['d']['test_size'] = float(request.form['test_size'])
     
@@ -196,8 +201,8 @@ def training(id):
 
 @app.route('/model/<id>/<output>', methods=['GET'])
 def download(id, output):
-    path = '../zip/' + id + '.zip'
-    return send_file(path, as_attachment=True)
+    path_zip = '..' + path['output'] + id + '.zip'
+    return send_file(path_zip, as_attachment=True)
     #return answer("POST output", 200)
 
 
