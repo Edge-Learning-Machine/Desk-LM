@@ -15,8 +15,8 @@ import sys
 
 
 database = {
-    "url": "mongodb://mongodb:27017/", 
-    #"url": "mongodb://localhost:27017/",
+    #"url": "mongodb://mongodb:27017/", 
+    "url": "mongodb://localhost:27017/",
     "name": "elm",
     "collection": "models"
 }
@@ -25,6 +25,14 @@ path = {
     "output": "/zip/",
     "datasets": "/datasets/"
 }
+
+status = [
+    { 'code': 0, 'description': 'Model uploaded'},
+    { 'code': 1, 'description': 'File csv uploaded'},
+    { 'code': 2, 'description': 'Send to elm'},
+    { 'code': 3, 'description': 'Training', 'perc': 0},
+    { 'code': 4, 'description': 'Done'}
+]
 
 app = Flask(__name__)
 port = int(os.environ.get('PORT', 5000))
@@ -54,18 +62,18 @@ def set_model():
     content = request.get_json()
 
     # verifico che richiesta abbia tutti i campi necessari
+    '''
     model_parameters = ['e','p','s','o']
     for parameter in model_parameters:
         if not parameter in content:
             return answer("Missing parameter: '" + parameter + "'", 400)
-
+    '''
 
     #aggiungo valori in risposta
     content['_id'] = str(uuid.uuid4())
-    content['status'] = '0: Model uploaded'
-    content['output'] = path['output'] + content['_id'] +'.zip'
+    content['status'] = status[0]
+    content['output'] = content['_id'] +'.zip'
     content['timestamp'] = str(datetime.now())
-
 
     #inserisco in mongodb
     try:
@@ -93,9 +101,8 @@ def get_model(id):
 def upload_csv(id):
     #verifico che vi sia il file csv
     if not request.files.get('file'):
-        return answer("Missing .csv file", 400)
+        return answer("Missing csv file", 400)
     
-
     #verifico che vi siano i parametri necessari
     model_parameters = ['target_column','test_size']
     for parameter in model_parameters:
@@ -124,7 +131,7 @@ def upload_csv(id):
 
     #aggiungo configurazione dataset
     result['d'] = {}
-    result['d']['path'] = path['datasets'] + file_name
+    result['d']['path'] = path['datasets'] + file_name #
     result['d']['target_column'] = request.form['target_column']
     result['d']['test_size'] = float(request.form['test_size'])
     
@@ -139,7 +146,7 @@ def upload_csv(id):
             result['d'][parameter] = request.form.get(parameter)
     
     #aggiorno lo stato
-    result['status'] = '1: CSV uploaded'
+    result['status'] = status[1]
 
     #aggiorno mongodb
     try:
@@ -161,6 +168,8 @@ def training(id):
     except ValueError as e:
         return answer('Request format not in valid JSON: ' + e, 400)
 
+    content = request.get_json()
+
     #recupero modello da mongodb
     try:
         result = collection.find_one({'_id':id})
@@ -171,39 +180,40 @@ def training(id):
     if not result:
         return answer("Model not existing", 400)
 
-    content = request.get_json()
-
     #verifico body
     if not content['evaluate']:
         return answer("Evaluate must be true to begin training", 400)
 
     #aggiorno stato e mongodb
     try:
-        collection.update_one({'_id':id}, {'$set':{'status':'2: Waiting for ELM'}})
+        collection.update_one({'_id':id}, {'$set':{'status':status[2]}})
         result = collection.find_one({'_id':id})
     except:
         return answer('Database not connected', 400)
 
     # avvio thread per addestramento elm in parallelo
-    sys.path.append('./')
-    import main
-    thread = threading.Thread(target=main.elm, args=(id, app, collection, ))
+    import interface_elm
+    thread = threading.Thread(target=interface_elm.int_elm, args=(id, app, collection, status, result, ))
     thread.start()
-    '''
-    import prova
-    thread = threading.Thread(target=prova.prova, args=(id, app, collection, ))
-    thread.start()
-    '''
-    ###
 
     return answer(result, 200)
 
 
 @app.route('/model/<id>/<output>', methods=['GET'])
 def download(id, output):
-    path_zip = '..' + path['output'] + id + '.zip'
+    #recupero modello da mongodb
+    try:
+        result = collection.find_one({'_id':id})
+    except:
+        return answer('Database not connected', 400)
+
+    #verifico che modello sia addestrato
+    if result['status']['code'] != 4:
+        return answer("Model not trained yet", 400)
+
+    path_zip = '..' + path['output'] + output
+
     return send_file(path_zip, as_attachment=True)
-    #return answer("POST output", 200)
 
 
 @app.errorhandler(404)

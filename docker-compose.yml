@@ -17,8 +17,3 @@ services:
         image: mongo
         ports:
             - "27017:27017"
-#    webhook:
-#        build: temp/
-#        container_name: webhook
-#        ports: 
-#            - "5001:5000"
