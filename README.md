@@ -1,5 +1,5 @@
 # Desk-LM
-Desk-LM is a python environment for training machine learning models. It currently implements the following ML algorithms:
+Desk-LM is a python environment for training machine learning models (and make predictions as well). It currently implements the following ML algorithms:
 
 - `Linear SVM`
 - `Decision Tree`
@@ -28,6 +28,8 @@ The command line expects the path to .json files specifying:
 - preprocessing
 - validation
 - output
+- prediction
+- storage
 
 #### Dataset configuration
 **-d <path_to_dataset_config_file>**
@@ -71,7 +73,7 @@ Each estimator type has its own configuration parameters:
   - batch_size (*), default: 32 
   - dropout (*), float between 0 and 1, default: 0
   - activation, array of strings (e.g., "relu", "tanh") for the activation function of the hidden layers, default: "relu"
-  - hidden_layers, array of integers representing the size of each hidden layer, default: []
+  - hidden_layers, array of array of integers representing the size of each hidden layer, default: []. Each inner array represents one ANN layer configuration (i.e., number of nodes for each layer) among those to be evaluated in the cross-validation
   
 (*) for the sake of model selection and cross validation, for this property <prop> it is possible to specify (all values are integers, if not differently specified, as ANN dropout):
 - < prop >, a single value
@@ -86,8 +88,8 @@ Please refer to sk-learn and keras documentation for the details on the configur
 **-p <path_to_preprocessing_config_file>**
 
 The .json file exposes the following properties:
-- scale, array of strings specifying scalers (currently supported scalers: ""), default: no scaler
-- pca_values, array of numbers representing the principal components. It is possible to specify also the string "mle", default: no PCA 
+- scale, array of strings specifying scalers (currently supported scalers: "StandardScaler", "MinMaxScaler"), default: no scaler
+- pca_values, array of numbers (integer or float between 0 and 1) representing the principal components. It is possible to specify also the string "mle", default: no PCA 
 
 Please refer to sk-learn documentation for further details.
 
@@ -125,8 +127,27 @@ The .json file exposes the following properties:
 - dataset_test_size, sets a limit to the number of testing labels to be exported for the dataset test. Can be either int (number of labels) or float (0-1), default: 1
 - training_set_cap, for k-NN, sets a limit to the number of training samples to be exported for the k-NN estimation. Can be either int (number of samples) or float (0-1), default: no cap 
 
+#### Prediction configuration
+**--predict <path_to_predict_config_file>**
+
+The .json file exposes the following properties:
+- model_id, the uuid of the model to be loaded on the server to make the prediction
+- samples, an array of samples to be predicted
+
+#### Storage configuration
+**--store**
+
+The program stores the estimator in the "./storage/" directory. It provides an uuid for future retrieval for predictions
+
 ### Run
-python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> -p <output_config_file>
+- For computing a model and generating files for deployment on Micro-LM (or an .h5 file for neural networks)
+python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> -o <output_config_file>
+
+- For computing and storing a model
+python main.py -d <dataset_config_file> -e <estimator_config_file> -p <preprocessing_config_file> -s <model_selection_config_file> --store
+
+- For predicting a set of samples with a trained model
+python main.py --predict <predict_config_file>
 
 ## Output
 Output files are also produced under the `out` diectory, with the following structure:
@@ -152,6 +173,7 @@ Example .json files are provided in the input dirctory. We adopt the following c
 - *est_* for estimator
 - *ms_* for model selection
 - *output_* for output
+- *pr_* for predicting
 
 Example .csv files are provided in the dataset/ directory.
 - Heart Disease UCI | Kaggle. Available online: http://www.kaggle.com/ronitf/heart-disease-uci

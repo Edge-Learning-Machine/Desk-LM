@@ -67,10 +67,10 @@ class Estimator(object):
             if self.n_classes == 1:
                 self.n_classes = 2
 
-    def process(self, prep, cv, X_train, y_train):
+    def process(self, prep, ms, X_train, y_train):
         pipe = self.createPipe(prep)
         param_grid = self.createGrid(prep)
-        grid = self.fitGrid(pipe, param_grid, cv, X_train, y_train)
+        grid = self.fitGrid(pipe, param_grid, ms, X_train, y_train)
         print(grid.best_score_)
         print(grid.best_params_)
         return grid.best_estimator_
@@ -98,9 +98,9 @@ class Estimator(object):
             param_grid['esti__'+p] = self.params[p]
         return param_grid
 
-    def fitGrid(self, pipe, param_grid, cv, X_train, y_train):
+    def fitGrid(self, pipe, param_grid, ms, X_train, y_train):
         from sklearn.model_selection import GridSearchCV
-        grid = GridSearchCV(pipe, param_grid=param_grid, cv=cv.cv, scoring = cv.scoring, verbose=cv.verbose)
+        grid = GridSearchCV(pipe, param_grid=param_grid, cv=ms.cv, scoring=ms.scoring, verbose=ms.verbose)
         grid.fit(X_train.values, y_train.values)
         #print(grid.best_params_)
         return grid

@@ -3,5 +3,5 @@
     "epochs_array": [3],
     "dropout_array":[0.1],
     "activation": ["relu"],
-    "hidden_layers": [[30]]
+    "hidden_layers": [[30], [5, 3]]
 }
