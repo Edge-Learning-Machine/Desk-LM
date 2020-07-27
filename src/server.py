@@ -16,10 +16,11 @@ import sys
 global database, path, status, api_errors
 
 BASE_TOKEN = 'src/BASE_TOKEN.json'
+#BASE_TOKEN = 'BASE_TOKEN.json'
 
 database = {
-    #"url": "mongodb://mongodb:27017/", 
     "url": "mongodb://localhost:27017/",
+    #"url": "mongodb://mongodb:27017/", 
     "name": "elm",
     "collections": [
         "clients",
@@ -29,8 +30,10 @@ database = {
 
 path = {
     "datasets": "datasets/",
+    #"datasets": "/datasets/",
     "output": "out/",
     "zip": "zip/"
+    #"zip": "/zip/"
 }
 
 status = [
@@ -61,8 +64,6 @@ cursor = clientDB[database['name']]
 clients = cursor[database['collections'][0]]
 models = cursor[database['collections'][1]]
 
-
-#mongo = MongoDB(app, database)
 
 def answer(content, status):
     if(status != 200):
@@ -97,7 +98,7 @@ def set_model():
 
     # verifico che richiesta abbia tutti i campi necessari
     '''
-    model_parameters = ['e','p','s','o']
+    model_parameters = ['pp','est','ms','output']
     for parameter in model_parameters:
         if not parameter in content:
             return answer("Missing parameter: '" + parameter + "'", 400)
@@ -111,6 +112,11 @@ def set_model():
     new_model['status'] = status[0]
     new_model['output'] = new_model['_id'] +'.zip'
     new_model['timestamp'] = str(datetime.now())
+
+    #sposto webhook fuori dal model
+    if 'webhook' in content:
+        new_model['webhook'] = new_model['model']['webhook']
+        del new_model['model']['webhook']
 
     #inserisco in mongodb
     try:
@@ -195,6 +201,12 @@ def upload_csv(id):
 
     #aggiungo configurazione dataset
     result['model']['ds'] = {}
+    result['model']['ds']['path'] = path['datasets'] + file_name
+    
+    for item in request.form:
+        result['model']['ds'][item] = json.loads(request.form[item])
+    
+    '''   
     result['model']['ds']['path'] = path['datasets'] + file_name #
     result['model']['ds']['target_column'] = request.form['target_column']
     result['model']['ds']['test_size'] = float(request.form['test_size'])
@@ -208,6 +220,7 @@ def upload_csv(id):
     for parameter in scalar_parameters:
         if request.form.get(parameter):
             result['model']['ds'][parameter] = request.form.get(parameter)
+    '''
     
     #aggiorno lo stato
     result['status'] = status[1]
@@ -304,7 +317,8 @@ def download(id, output):
     if result['status']['code'] != 4:
         return answer("Model not trained yet", 400)
 
-    path_zip = path['zip'] + output
+    path_zip = '../' + path['zip'] + output
+    #path_zip = path['zip'] + output
 
     return send_file(path_zip, as_attachment=True)
 
