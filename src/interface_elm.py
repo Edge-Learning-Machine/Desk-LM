@@ -3,6 +3,7 @@ import json
 import argparse
 import zipfile
 import os
+import requests
 
 INPUT = 'input/'
 #INPUT = '/input/'
@@ -33,6 +34,7 @@ def int_elm(id, app, collection, model, path, status, api_errors):
     sys.path.append('./')
     from main import ELM
 
+    #configurazione args per elm
     parser = argparse.ArgumentParser()
     parser.add_argument('--predict')
     parser.add_argument('--store', action="store_true")
@@ -44,7 +46,10 @@ def int_elm(id, app, collection, model, path, status, api_errors):
     args.selection = f'{INPUT}ms_api.json'
     args.output = f'{INPUT}output_api.json'
 
+    #inizializzazione di elm
     elm = ELM.init(args)
+
+    #elaborazione di elm
     if elm == 0:
         ELM.process()
         #aggiorno mongodb
@@ -70,5 +75,10 @@ def int_elm(id, app, collection, model, path, status, api_errors):
         app.logger.info(api_errors['no_db'])
 
     app.logger.info("Done training")
+
+    #webhook
+    if 'webhook' in model:
+        app.logger.info('Sending status to ' + model['webhook'])
+        requests.get(model['webhook'])
 
     return 

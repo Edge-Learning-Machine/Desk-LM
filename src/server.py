@@ -13,9 +13,9 @@ from datetime import datetime
 import threading
 import sys
 
-global database, path, status, api_errors
+#global database, path, status, api_errors
 
-BASE_TOKEN = 'src/BASE_TOKEN.json'
+base_token = 'src/BASE_TOKEN.json'
 #BASE_TOKEN = 'BASE_TOKEN.json'
 
 database = {
@@ -331,8 +331,9 @@ def notfound(error):
 if __name__ == '__main__':
     try:
         results = clients.find({})
-        if len(list(results)) == 0:      
-            client = json.load(open(BASE_TOKEN))
+        if len(list(results)) == 0:
+            print("API initialization")
+            client = json.load(open(base_token))
             clients.insert_one(client)
     except:
         quit(api_errors['no_db'])
