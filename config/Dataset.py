@@ -20,7 +20,7 @@ datasetSchema = {
                 "type": "string"
             }
             },
-        "select_feature_columns": {
+        "select_columns": {
             "type": "array",
             "items": {
                 "type": "string"
@@ -80,8 +80,8 @@ class Dataset(object):
                 decimal = '.'
             self.df = pd.read_csv(jsonData['path'], skiprows=skiprows, sep=sep, decimal=decimal)
             self.df.columns = map(str.lower, self.df.columns)
-            if 'select_feature_columns' in jsonData:
-                sfc = jsonData['select_feature_columns']
+            if 'select_columns' in jsonData:
+                sfc = jsonData['select_columns']
                 sfc = [s.lower() for s in sfc]
                 self.df = self.df[sfc]
             elif 'skip_columns' in jsonData:

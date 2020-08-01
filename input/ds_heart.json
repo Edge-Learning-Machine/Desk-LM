@@ -3,5 +3,5 @@
     "test_size": 0.1,
     "target_column":"target",
     "skip_columns":["age", "sex"],
-    "select_feature_columns":["age", "sex"]
+    "select_columns":["age", "sex"]
 }
