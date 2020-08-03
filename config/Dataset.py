@@ -78,23 +78,28 @@ class Dataset(object):
                 decimal = jsonData['decimal']
             else:
                 decimal = '.'
-            self.df = pd.read_csv(jsonData['path'], skiprows=skiprows, sep=sep, decimal=decimal)
-            self.df.columns = map(str.lower, self.df.columns)
+            dfr = pd.read_csv(jsonData['path'], skiprows=skiprows, sep=sep, decimal=decimal)
+            dfr.columns = map(str.lower, dfr.columns)
             if 'select_columns' in jsonData:
                 sfc = jsonData['select_columns']
                 sfc = [s.lower() for s in sfc]
-                self.df = self.df[sfc]
+                self.X = dfr[sfc]
+                if 'target_column' in jsonData:
+                    tc = jsonData['target_column'].lower()
+                    self.y = dfr.loc[:,tc]
+                else:
+                    self.y = dfr.iloc[:,-1]
             elif 'skip_columns' in jsonData:
-                sc = jsonData['skip_columns']
-                sc = [s.lower() for s in sc]
-                self.df.drop(sc, axis = 1, inplace=True)
-            if 'target_column' in jsonData:
-                tc = jsonData['target_column'].lower()
-                self.y = self.df.loc[:,tc]
-                self.X = self.df.drop(tc, axis = 1)
-            else:
-                self.y = self.df.iloc[:,-1]
-                self.X = self.df.drop(self.df.columns[-1], axis = 1)
+                skc = jsonData['skip_columns']
+                skc = [s.lower() for s in skc]
+                dfr.drop(skc, axis = 1, inplace = True)
+                if 'target_column' in jsonData:
+                    tc = jsonData['target_column'].lower()
+                    self.y = dfr.loc[:,tc]
+                    self.X = dfr.drop(tc, axis = 1)
+                else:
+                    self.y = dfr.iloc[:,-1]
+                    self.X = dfr.drop(dfr.columns[-1], axis = 1)
 
             # Imputation
             #self.X.replace(r'^\s*$', np.nan, regex=True, inplace=True)           
