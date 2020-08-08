@@ -37,7 +37,8 @@ The command line expects the path to .json files specifying:
 The .json file exposes the following properties:
 - path, path to the .csv dataset file 
 - skip_rows, number of rows to be skipped before the column names
-- skip_columns, array of names of the columns to be skipped
+- select_columns, array of names of the columns to be selected as features (all the others are discarded)
+- skip_columns, array of names of the columns to be skipped (ignored, if select_feature_columns is set)
 - target_column, name of the target column
 - sep, .csv file separator string/char
 - decimal, .csv file decimal number separator

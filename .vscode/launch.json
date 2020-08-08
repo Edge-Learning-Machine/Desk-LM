@@ -35,8 +35,12 @@
                 //"input/ms_2_reg.json",
                 "input/ms_api.json",
                 "-o",
-                //"input/output_1.json"
-                "input/output_api.json"
+                "input/output_1.json",
+                "--store"
+                //"--predict",
+                //"input/pr_heart_svm_no_ppms.json"
+                //"input/pr_heart_svm.json"
+                //"input/pr_heart_svm_mle.json"
             ],
             "console": "integratedTerminal"
         }
