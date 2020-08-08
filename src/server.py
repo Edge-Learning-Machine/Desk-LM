@@ -47,7 +47,7 @@ status = [
 api_errors = {
     'no_token': 'Missing token',
     'no_db': 'Database not found',
-    'unauth': 'Unauthorizated',
+    'no_auth': 'Unauthorizated',
     'no_req': 'No request contents',
     'np_json': 'Request content not in JSON format',
     'no_json_valid': 'Request format not in valid JSON',
@@ -83,7 +83,7 @@ def set_model():
         return answer(api_errors['no_db'], 404)
 
     if not client:
-        return answer(api_errors['unauth'], 401)
+        return answer(api_errors['no_auth'], 401)
 
     #verifico che la richiesta sia presente e in formato JSON valido
     if (not request.data):
@@ -139,7 +139,7 @@ def get_model(id):
         return answer(api_errors['no_db'], 404)
 
     if not client:
-        return answer(api_errors['unauth'], 401)
+        return answer(api_errors['no_auth'], 401)
 
     #recupero modello da mongo
     try:
@@ -165,7 +165,7 @@ def upload_csv(id):
         return answer(api_errors['no_db'], 404)
 
     if not client:
-        return answer(api_errors['unauth'], 401)
+        return answer(api_errors['no_auth'], 401)
 
     #verifico che vi sia il file csv allegato
     if not request.files.get('file'):
@@ -246,7 +246,7 @@ def training(id):
         return answer(api_errors['no_db'], 404)
 
     if not client:
-        return answer(api_errors['unauth'], 401)
+        return answer(api_errors['no_auth'], 401)
     
     #verifico che la richiesta sia presente e in formato JSON valido
     if (not request.data):
@@ -305,7 +305,7 @@ def download(id, output):
         return answer(api_errors['no_db'], 404)
 
     if not client:
-        return answer(api_errors['unauth'], 401)
+        return answer(api_errors['no_auth'], 401)
 
     #recupero modello da mongodb
     try:
