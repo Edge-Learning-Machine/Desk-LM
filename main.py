@@ -51,6 +51,10 @@ class ELM(object):
             except ValueError as err:
                 return err
 
+            if ELM.args.store == True and ELM.estimator.nick == 'tripleES':
+                err = 'Storage not supported for TripleES yet.'
+                return err
+
             import Preprocess as pp
             try:
                 ELM.preprocess = pp.Preprocess(args.preprocess)
@@ -81,8 +85,11 @@ class ELM(object):
             print(p)
         else:
             from sklearn.model_selection import train_test_split
+            shuffle = True
+            if ELM.estimator.nick == 'tripleES':
+                shuffle = False
             X_train, X_test, y_train, y_test = train_test_split(
-                ELM.dataset.X, ELM.dataset.y, train_size=ELM.training_set_cap, test_size=ELM.dataset.test_size, random_state=0)
+                ELM.dataset.X, ELM.dataset.y, train_size=ELM.training_set_cap, test_size=ELM.dataset.test_size, shuffle = shuffle)
 
             col_means = X_train.mean()
             X_train = X_train.fillna(col_means)
@@ -106,6 +113,7 @@ class ELM(object):
                 else:
                     score = getattr(metrics, ELM.modelselection.metrics)(y_test, y_pred)
                     print(f'{ELM.modelselection.metrics} in testing set: {score}')
+                #Add/change directly above if you want a different metrics (e.g., r2_score)
 
             if ELM.args.store == True:
                 import uuid
@@ -118,22 +126,25 @@ class ELM(object):
                 import OutputMgr as omgr
                 omgr.OutputMgr.cleanOutDir()
 
-                ELM.estimator.output_manager.saveParams(best_estimator['esti'])
-
-                sys.path.insert(1, 'output')
-                import Preprocessing_OM
-                if 'scale' in best_estimator.named_steps:
-                    best_scaler = best_estimator['scale']
+                if ELM.estimator.nick == 'tripleES':
+                    ELM.estimator.output_manager.saveParams(best_estimator)
                 else:
-                    best_scaler = None
-                if 'reduce_dims' in best_estimator.named_steps:
-                    best_reduce_dims = best_estimator['reduce_dims']
-                else:
-                    best_reduce_dims = None
-                Preprocessing_OM.savePPParams(best_scaler, best_reduce_dims, ELM.estimator)
+                    ELM.estimator.output_manager.saveParams(best_estimator['esti'])
 
-                if ELM.estimator.nick == 'knn':
-                    omgr.OutputMgr.saveTrainingSet(X_train, y_train, ELM.estimator)
+                    sys.path.insert(1, 'output')
+                    import Preprocessing_OM
+                    if 'scale' in best_estimator.named_steps:
+                        best_scaler = best_estimator['scale']
+                    else:
+                        best_scaler = None
+                    if 'reduce_dims' in best_estimator.named_steps:
+                        best_reduce_dims = best_estimator['reduce_dims']
+                    else:
+                        best_reduce_dims = None
+                    Preprocessing_OM.savePPParams(best_scaler, best_reduce_dims, ELM.estimator)
+
+                    if ELM.estimator.nick == 'knn':
+                        omgr.OutputMgr.saveTrainingSet(X_train, y_train, ELM.estimator)
 
                 if ELM.output != None:
                     if ELM.output.is_dataset_test:

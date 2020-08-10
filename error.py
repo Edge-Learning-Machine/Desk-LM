@@ -14,4 +14,6 @@ errors = {
     'ann_config':'Neural network configuration error',
     'unknown_scoring_attribute':'Scoring attribute unknown for this estimator: ',
     'predict_config':'Predict configuration error',
+    'tscv_config':'TSCV configuration error',
+    'tripleES_wrong_nsplits' : 'n_splits is too high'
 }

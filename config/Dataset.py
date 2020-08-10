@@ -27,6 +27,7 @@ datasetSchema = {
             }
             },
         "target_column": {"type": "string"},
+        "time_series_column": {"type": "string"},
         "sep": {"type": "string"},
         "decimal": {"type": "string"},
         "test_size": {"type": "number"},
@@ -80,7 +81,11 @@ class Dataset(object):
                 decimal = '.'
             dfr = pd.read_csv(jsonData['path'], skiprows=skiprows, sep=sep, decimal=decimal)
             dfr.columns = map(str.lower, dfr.columns)
-            if 'select_columns' in jsonData:
+            if 'time_series_column' in jsonData:
+                tsc = jsonData['time_series_column'].lower()
+                self.X = dfr[tsc]
+                self.y = dfr[tsc]
+            elif 'select_columns' in jsonData:
                 sfc = jsonData['select_columns']
                 sfc = [s.lower() for s in sfc]
                 self.X = dfr[sfc]

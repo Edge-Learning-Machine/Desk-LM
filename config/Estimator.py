@@ -47,6 +47,9 @@ class Estimator(object):
                 elif jsonData['estimator'].startswith('ANN'):                
                     import ANN
                     esti = ANN.ANN(jsonData)
+                elif jsonData['estimator'] == 'TripleES':
+                    import TripleES
+                    esti = TripleES.TripleES(jsonData)
                 else:
                     est_str = jsonData['estimator']
                     print(f'Invalid value for estimator name: {est_str}')
