@@ -7,6 +7,8 @@ import sklearn as skl
 
 import logger as lg
 
+import error as error
+
 class ELM(object):
 
     predict = None
@@ -51,10 +53,6 @@ class ELM(object):
             except ValueError as err:
                 return err
 
-            if ELM.args.store == True and ELM.estimator.nick == 'tripleES':
-                err = 'Storage not supported for TripleES yet.'
-                return err
-
             import Preprocess as pp
             try:
                 ELM.preprocess = pp.Preprocess(args.preprocess)
@@ -81,12 +79,17 @@ class ELM(object):
     def process():
         if ELM.predict != None:
             m = jl.load(os.path.join('storage/', ELM.predict.model_id + '.pkl'))
-            p = m.predict(ELM.predict.samples)
+            if m.nick == 'TripleES':
+                if not hasattr(ELM.predict, 'n_preds'):
+                    raise ValueError(error.errors['miss_n_preds'])
+                p = m.predict_from_series(ELM.predict.samples, ELM.predict.n_preds)
+            else:
+                p = m.predict(ELM.predict.samples)
             print(p)
         else:
             from sklearn.model_selection import train_test_split
             shuffle = True
-            if ELM.estimator.nick == 'tripleES':
+            if ELM.estimator.nick == 'TripleES':
                 shuffle = False
             X_train, X_test, y_train, y_test = train_test_split(
                 ELM.dataset.X, ELM.dataset.y, train_size=ELM.training_set_cap, test_size=ELM.dataset.test_size, shuffle = shuffle)
@@ -126,7 +129,7 @@ class ELM(object):
                 import OutputMgr as omgr
                 omgr.OutputMgr.cleanOutDir()
 
-                if ELM.estimator.nick == 'tripleES':
+                if ELM.estimator.nick == 'TripleES':
                     ELM.estimator.output_manager.saveParams(best_estimator)
                 else:
                     ELM.estimator.output_manager.saveParams(best_estimator['esti'])

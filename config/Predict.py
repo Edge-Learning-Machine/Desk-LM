@@ -19,7 +19,8 @@ predictSchema = {
                         "type": "number"
                 }
             }
-        }
+        },
+        "n_preds": {"type": "number"}
     },
     "required": ["model_id", "samples"],
     "additionalProperties": False
@@ -55,6 +56,8 @@ class Predict(object):
         try:
             self.model_id = jsonData['model_id']
             self.samples = jsonData['samples']
+            if 'n_preds' in jsonData:
+                self.n_preds = jsonData['n_preds']
         except Exception as err:
             template = "An exception of type {0} occurred. Arguments: {1!r}"
             message = template.format(type(err).__name__, err.args)

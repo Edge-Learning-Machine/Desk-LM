@@ -46,7 +46,7 @@ tripleESSchema = {
 class TripleES(Estimator):
     def __init__(self, jsonData):
         super().__init__()
-        self.nick = 'tripleES'
+        self.nick = 'TripleES'
         try:
             validate(instance=jsonData, schema=tripleESSchema)
         except jsonschema.exceptions.ValidationError as err:
@@ -66,10 +66,11 @@ class TripleES(Estimator):
         else:
             self.scaling_factor = 1.96    
         self.season_length = jsonData['season_length']   
-            
+
         sys.path.insert(1, 'output')
         import TripleES_OM
         self.output_manager = TripleES_OM.TripleES_OM(self)
+
 
     def process(self, prep, cv, X_train, y_train):
     # initializing model parameters alpha, beta and gamma
@@ -110,6 +111,18 @@ class TripleES(Estimator):
         self.model.triple_exponential_smoothing()
         predictions = self.model.result[-len(X_test):]
         return predictions
+
+    def predict_from_series(self, series, n_preds):
+        res = []
+        for i in range(len(series)):
+            if len(series[i])-2*self.season_length<0:
+                print(f'Skipped series nr. {i}, as too short. A series should be long at least two times the season length')
+                continue
+            self.model = HoltWinters(series[i], self.season_length, self.alpha, self.beta, self.gamma, n_preds, self.scaling_factor) 
+            self.model.triple_exponential_smoothing()
+            predictions = self.model.result[-n_preds:]
+            res.append(predictions)
+        return res
 
 class HoltWinters:
     

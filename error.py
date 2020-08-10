@@ -15,5 +15,6 @@ errors = {
     'unknown_scoring_attribute':'Scoring attribute unknown for this estimator: ',
     'predict_config':'Predict configuration error',
     'tscv_config':'TSCV configuration error',
-    'tripleES_wrong_nsplits' : 'n_splits is too high'
+    'tripleES_wrong_nsplits' : 'n_splits is too high',
+    'miss_n_preds' : 'n_preds parameter is needed for predicting a time series'
 }

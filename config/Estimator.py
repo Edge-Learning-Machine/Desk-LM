@@ -108,6 +108,12 @@ class Estimator(object):
         #print(grid.best_params_)
         return grid
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Don't pickle baz
+        del state["output_manager"]
+        return state
+
 '''
     # Constructor
     def __init__(self, jsonFileName):
