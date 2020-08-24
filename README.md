@@ -5,6 +5,7 @@ Desk-LM is a python environment for training machine learning models (and make p
 - `Decision Tree`
 - `K-NN`
 - `ANN`
+- `TripleES` Holt-Winters Triple Exponential Smoothing implementation for time series
 
 We are extending the library to other algorithms, also unsupervised. Your voluntary contribution is welcome.
 
@@ -12,7 +13,7 @@ The user can specify a `.csv` dataset, an algorithm and a set of parameter value
 
 For `ANNs`, [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) outputs the model in `hdf5` file format, to be imported by `STM32 CubeAI`, together with .c and .h files for pre-processing and for testing the whole dataset performance on the microcontroller (STM32 Nucleo boards only).
 
-For all the other algorithms, [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) produces .c and .h that will be used as source files in a [`Micro-LM`](https://github.com/Edge-Learning-Machine/Micro-LM) project for optimzed memory footprint on edge devices. They contain the parameters of the selected ML model.
+For all the other algorithms, [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) produces .c and/or .h that will be used as source files in a [`Micro-LM`](https://github.com/Edge-Learning-Machine/Micro-LM) project for optimzed memory footprint on edge devices. They contain the parameters of the selected ML model.
 
 [`Desk-LM`](https://github.com/Edge-Learning-Machine/Desk-LM) relies on numpy, pandas, sk-learn and keras/Tensorflow.
 
@@ -40,6 +41,7 @@ The .json file exposes the following properties:
 - select_columns, array of names of the columns to be selected as features (all the others are discarded)
 - skip_columns, array of names of the columns to be skipped (ignored, if select_feature_columns is set)
 - target_column, name of the target column
+- time_series_column, name of the column for the time series. It is used only for time series computation and is mutually exclusive with all the other column options 
 - sep, .csv file separator string/char
 - decimal, .csv file decimal number separator
 - test_size, integer (number of samples for the test), or float (fraction of the total samples to be used as test)
@@ -58,6 +60,7 @@ The .json file exposes the following properties:
   - LinearSVR
   - ANNClassifier, Keras/Tensorflow implementation
   - ANNRegressor, Keras/Tensorflow implementation
+  - TripleES, the Holt-Winters Triple Exponential Smoothing for time series
 
 Each estimator type has its own configuration parameters:
 - k-NN
@@ -75,7 +78,9 @@ Each estimator type has its own configuration parameters:
   - dropout (*), float between 0 and 1, default: 0
   - activation, array of strings (e.g., "relu", "tanh") for the activation function of the hidden layers, default: "relu"
   - hidden_layers, array of array of integers representing the size of each hidden layer, default: []. Each inner array represents one ANN layer configuration (i.e., number of nodes for each layer) among those to be evaluated in the cross-validation
-  
+- TripleES
+  - season_length
+
 (*) for the sake of model selection and cross validation, for this property <prop> it is possible to specify (all values are integers, if not differently specified, as ANN dropout):
 - < prop >, a single value
 - <prop_array>, an array of values
@@ -91,6 +96,8 @@ Please refer to sk-learn and keras documentation for the details on the configur
 The .json file exposes the following properties:
 - scale, array of strings specifying scalers (currently supported scalers: "StandardScaler", "MinMaxScaler"), default: no scaler
 - pca_values, array of numbers (integer or float between 0 and 1) representing the principal components. It is possible to specify also the string "mle", default: no PCA 
+
+Not used for TripleES.
 
 Please refer to sk-learn documentation for further details.
 
@@ -133,7 +140,7 @@ The .json file exposes the following properties:
 
 The .json file exposes the following properties:
 - model_id, the uuid of the model to be loaded on the server to make the prediction
-- samples, an array of samples to be predicted
+- samples, an array of samples for which to build the prediction
 
 #### Storage configuration
 **--store**
@@ -158,7 +165,7 @@ Output files are also produced under the `out` diectory, with the following stru
 
 The structure is duplicated in the `elm` export directory, if specified in the output configuration file.
 
-### Linear SVM / DT / K-NN 
+### Linear SVM / DT / K-NN / TripleES
 For using source and header files produced by Desk-LM for these algorithms, please refer to the [`Micro-LM`](https://github.com/Edge-Learning-Machine/Micro-LM) documentation.
 
 ### Use a Desk-LM ANN in a CubeIDE project, using STM X-Cube-AI package (for STM32 Nucleo boards only): 
@@ -176,10 +183,11 @@ Example .json files are provided in the input dirctory. We adopt the following c
 - *output_* for output
 - *pr_* for predicting
 
-Example .csv files are provided in the dataset/ directory.
+Example .csv files are provided in the ./dataset/ directory.
 - Heart Disease UCI | Kaggle. Available online: http://www.kaggle.com/ronitf/heart-disease-uci
 - Traffic, Driving Style and Road Surface Condition | Kaggle. Available online: http://www.kaggle.com/gloseto/traffic-driving-style-road-surface-condition
 - Appliances energy prediction | UCI. Available online: https://data.world/uci/appliances-energy-prediction
+- Ads timeseries | Kaggle. Available online: https://www.kaggle.com/kashnitsky/topic-9-part-1-time-series-analysis-in-python?select=ads.csv
 
 ## Data type
 float 32 data are used
@@ -196,3 +204,7 @@ Please see [CONTRIBUTING.md](https://github.com/Edge-Learning-Machine/Desk-LM/bl
 ## Reference article for more infomation
 F., Sakr, F., Bellotti, R., Berta, A., De Gloria, "Machine Learning on Mainstream Microcontrollers," Sensors 2020, 20, 2638.
 https://www.mdpi.com/1424-8220/20/9/2638
+
+
+## References
+Credit for the Holt-Winters Triple Exponential Smoothing implementation for time series: https://medium.com/open-machine-learning-course/open-machine-learning-course-topic-9-time-series-analysis-in-python-a270cb05e0b3
