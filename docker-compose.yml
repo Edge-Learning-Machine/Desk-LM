@@ -7,11 +7,6 @@ services:
             - mongodb
         ports:
             - "5000:5000"
-        volumes:
-            - /datasets/
-            - /input/
-            - /out/
-            - /zip/
     mongodb:
         container_name: mongodb
         image: mongo

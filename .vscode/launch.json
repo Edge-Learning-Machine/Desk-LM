@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: API elm",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/server.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: main",
             "type": "python",
             "request": "launch",
