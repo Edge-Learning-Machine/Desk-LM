@@ -8,7 +8,7 @@
             "name": "Python: API elm",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/server.py",
+            "program": "${workspaceFolder}/src/api.py",
             "console": "integratedTerminal"
         },
         {

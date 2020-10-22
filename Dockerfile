@@ -17,7 +17,7 @@ COPY logger.py /app
 COPY main.py /app
 COPY README.md /app
 
-CMD ["python3", "server.py"]
+CMD ["python3", "api.py"]
 
 #COPY requirements.txt /
 #RUN pip3 install -r /requirements.txt
