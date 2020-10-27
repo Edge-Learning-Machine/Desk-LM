@@ -242,8 +242,9 @@ def delete_model_route(request, database, id):
             os.remove(value['model']['ds']['path'])
 
     # elimino lo zip (se esiste)
-    if os.path.isfile(value['output']):
-        os.remove(value['output'])
+    if 'output' in value:
+        if os.path.isfile(value['output']):
+            os.remove(value['output'])
 
     # elimino lo storage (se esiste)
     if 'storage' in value:
@@ -256,4 +257,3 @@ def delete_model_route(request, database, id):
         return answer(error, 404)
 
     return answer({'succes':'Model deleted!'}, 200)
-
