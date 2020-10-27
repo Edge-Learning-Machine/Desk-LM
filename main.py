@@ -18,6 +18,7 @@ class ELM(object):
 
     training_set_cap = None
     args = None
+    uuid_str = None
 
     @staticmethod
     def init(args):
@@ -79,6 +80,7 @@ class ELM(object):
             m = jl.load(os.path.join('storage/', ELM.predict.model_id + '.pkl'))
             p = m.predict(ELM.predict.samples)
             print(p)
+            return p
         else:
             from sklearn.model_selection import train_test_split
             X_train, X_test, y_train, y_test = train_test_split(
@@ -109,9 +111,9 @@ class ELM(object):
 
             if ELM.args.store == True:
                 import uuid
-                uuid_str = str(uuid.uuid4())
-                jl.dump(best_estimator, './storage/' + uuid_str + '.pkl', compress = 3)
-                print('Stored model: ' + uuid_str)
+                ELM.uuid_str = str(uuid.uuid4())
+                jl.dump(best_estimator, './storage/' + ELM.uuid_str + '.pkl', compress = 3)
+                print('Stored model: ' + ELM.uuid_str)
 
             if ELM.args.output != None:
                 sys.path.insert(1, 'output')

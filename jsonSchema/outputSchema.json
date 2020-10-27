@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "properties": {
+        "export_path": {"type": "string"},
+        "is_dataset_test": {"type": "boolean"},
+        "dataset_test_size": {"type": "number"},
+        "training_set_cap": {"type": "number"}
+    },
+    "additionalProperties": false
+}

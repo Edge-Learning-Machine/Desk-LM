@@ -14,7 +14,6 @@ def server(database):
     def get_model(id):
         return get_model_route(request, database, id)
 
-
     @app.route('/model', methods=['POST'])
     def post_model():
         return post_model_route(request, database)

@@ -1,10 +1,12 @@
-import uuid
-from config import *
-from datetime import datetime
-from commons.checker import *
 import os
+import uuid
 import json
 import threading
+from commons.error import *
+from commons.status import *
+from commons.checker import *
+from commons.response import *
+from datetime import datetime
 from flask import send_file
 
 def get_models_route(request, database):
@@ -14,9 +16,9 @@ def get_models_route(request, database):
         return answer(error, code)
 
     # recupero i modelli dal database
-    error, code, values = database.find(os.getenv('MODELS_COLLECTION'),'')
+    error, values = database.find(os.getenv('MODELS_COLLECTION'),'')
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     result = {}
     i = 1
@@ -32,11 +34,11 @@ def get_model_route(request, database, id):
     error, code = check_authorization(request, database)
     if error:
         return answer(error, code)
-
+    
     # recupero il modello dal database
-    error, code, value = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
+    error, value = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     if not value:
         return answer(api_errors['no_model'], 400)
@@ -55,6 +57,18 @@ def post_model_route(request, database):
     if error:
         return answer(error, code)
 
+    # verifico parametri modello
+    error, code = check_schema(content, 'jsonSchema/api_model_schema.json')
+    if error:
+        message = api_errors['no_params'] + ' - ' + 'api model'
+        return answer(message, code)
+
+    for param in content:
+        error, code = check_schema(content[param], 'jsonSchema/'+param+'Schema.json')
+        if error:
+            message = api_errors['no_params'] + ' - ' + param
+            return answer(message, code)
+
     # creazione nuovo modello
     new_model = {}
     new_model['model'] = content
@@ -71,9 +85,9 @@ def post_model_route(request, database):
         del new_model['model']['webhook']
 
     # inserisco nel database
-    error, code = database.insert_one(os.getenv('MODELS_COLLECTION'), new_model)
+    error = database.insert_one(os.getenv('MODELS_COLLECTION'), new_model)
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     return answer(new_model, 200)
 
@@ -90,35 +104,41 @@ def post_model_trainingset_route(request, database, id):
         return answer(api_errors['no_csv'], 400)
 
     # recupero il modello dal database 
-    error, code, value = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
+    error, value = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     # verifico che il modello esista
     if not value:
         return answer(api_errors['no_model'], 400)
 
-    # salvo il file rinominandolo
-    try:
-        file_name = value['_id']+'.csv'
-        file_path = os.path.join(os.getenv('DATASETS_PATH'), file_name)
-        file_csv.save(file_path)
-    except:
-        return answer(api_errors['no_save'], 400)
-
     # modifico il modello con i dati per il dataset
+    file_name = value['_id']+'.csv'
+    file_path = os.path.join(os.getenv('DATASETS_PATH'), file_name)
     value['model']['ds'] = {}
     value['model']['ds']['path'] = file_path
     for item in request.form:
         value['model']['ds'][item] = json.loads(request.form[item])
 
+    # controllo parametri del ds
+    error, code = check_schema(value["model"]['ds'], 'jsonSchema/dsSchema.json')
+    if error:
+        message = api_errors['no_params'] + ' - ' + 'ds'
+        return answer(message, code)
+
+    # salvo il file rinominandolo
+    try:
+        file_csv.save(file_path)
+    except:
+        return answer(api_errors['no_save'], 400)
+
     # aggiorno lo stato 
     value['status'] = model_status[1]
     
     # aggiorno il database
-    error, code = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':value})
+    error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':value})
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     return answer(value, 200)
 
@@ -135,9 +155,9 @@ def put_model_route(request, database, id, app):
         return answer(error, code)
 
     # recupero il modello dal database
-    error, code, value = database.find_one(os.getenv('MODELS_COLLECTION'), {'_id':id})
+    error, value = database.find_one(os.getenv('MODELS_COLLECTION'), {'_id':id})
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     # verifico che il modello esista
     if not value:
@@ -147,22 +167,36 @@ def put_model_route(request, database, id, app):
     if value['status']['code'] < 1:
         return answer(api_errors['no_csv'], 400)
 
-    # verifico il comando di avvio addestramento
+    # avvio elm addestramento
     if 'evaluate' in content and content['evaluate']:
         # aggiorno stato e database
         value['status'] = model_status[2]
-        error, code = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':value})
+        error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':value})
         if error:
-            return answer(error, code)
+            return answer(error, 404)
 
-        # avvio addestramento
+        # avvio elm addestramento in parallelo (thread)
         from elm_manager import elm_manager
-        elm_thread = threading.Thread(target=elm_manager, args=(value, database, id, app, ))
-        elm_thread.start()
+        elm_thread_evaluate = threading.Thread(target=elm_manager, args=('evaluate', database, id, value, app, content, ))
+        elm_thread_evaluate.start()
 
         return answer(value, 200)
+
+    # avvio elm predizione
+    elif 'predict' in content and content['predict']:
+        # verifico che sia gia stato addestrato
+        if value['status']['code'] < 4:
+            return answer("Wait for the training", 400)
+        if not 'samples' in content:
+           return answer("Missing samples", 400)
+            
+        # avvio elm predizione
+        from elm_manager import elm_manager
+        result = elm_manager('predict', database, id, value, app, content)
+
+        return answer({"predict": result.tolist()}, 200)
     else:
-        return answer(value, 200)
+        return answer("Bad request", 400)
 
 
 def get_model_download_route(request, database, id):
@@ -172,9 +206,9 @@ def get_model_download_route(request, database, id):
         return answer(error, code)
 
     # recupero il modello dal database
-    error, code, value = database.find_one(os.getenv('MODELS_COLLECTION'), {'_id':id})
+    error, value = database.find_one(os.getenv('MODELS_COLLECTION'), {'_id':id})
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     # verifico che il modello esista
     if not value:
@@ -194,28 +228,32 @@ def delete_model_route(request, database, id):
         return answer(error, code)
 
     # recupero il modello dal database
-    error, code, value = database.find_one(os.getenv('MODELS_COLLECTION'), {'_id':id})
+    error, value = database.find_one(os.getenv('MODELS_COLLECTION'), {'_id':id})
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     # verifico che il modello esista
     if not value:
         return answer(api_errors['no_model'], 400)
 
     # elimino il file csv (se esiste)
-    if value['status']['code'] >= 1:
+    if value['status']['code'] > 0:
         if os.path.isfile(value['model']['ds']['path']):
             os.remove(value['model']['ds']['path'])
 
     # elimino lo zip (se esiste)
-    if value['status']['code'] >= 4:
-        if os.path.isfile(value['output']):
-            os.remove(value['output'])
+    if os.path.isfile(value['output']):
+        os.remove(value['output'])
+
+    # elimino lo storage (se esiste)
+    if 'storage' in value:
+        if os.path.isfile('storage/' + value['storage'] + '.pkl'):
+            os.remove('storage/' + value['storage'] + '.pkl')
 
     # elimino il documento dal database
-    error, code = database.delete_one(os.getenv('MODELS_COLLECTION'), {'_id':id})
+    error = database.delete_one(os.getenv('MODELS_COLLECTION'), {'_id':id})
     if error:
-        return answer(error, code)
+        return answer(error, 404)
 
     return answer({'succes':'Model deleted!'}, 200)
 

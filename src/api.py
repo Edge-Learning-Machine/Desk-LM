@@ -12,10 +12,10 @@ def run():
     database = Database(os.getenv('DATABASE_NAME'))
 
     # Create default access
-    error, code, results = database.find(os.getenv('CLIENTS_COLLECTION'),'')
+    error, results = database.find(os.getenv('CLIENTS_COLLECTION'),'')
     if len(list(results)) == 0:
         default_client = json.load(open(os.getenv('DEFAULT_TOKEN')))
-        error, code = database.insert_one(os.getenv('CLIENTS_COLLECTION'), default_client)
+        error = database.insert_one(os.getenv('CLIENTS_COLLECTION'), default_client)
         if error:
             print('Default client not created!')
             return 

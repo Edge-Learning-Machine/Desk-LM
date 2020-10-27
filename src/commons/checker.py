@@ -1,26 +1,31 @@
-from config import *
-from flask import jsonify
+import os
 import json
 import jsonpickle
-import os
-
-def answer(content, status):
-    if(status != 200):
-        content = { 'error': content }
-    return jsonify(content), status
+from commons.error import *
+from jsonschema import validate
 
 
-# Return (error, code)
 def check_authorization(request, database):
-    error, code, value = database.find_one(os.getenv('CLIENTS_COLLECTION'),{'token':request.headers.get('Authorization')})
+    """
+    Returns:
+        string: error
+        int: code
+    """
+    error, value = database.find_one(os.getenv('CLIENTS_COLLECTION'),{'token':request.headers.get('Authorization')})
     if error:
-        return (value, 404)
+        return error, 404
     if not value:
-        return (api_errors['no_auth'], 401)
-    return (None, None)
+        return api_errors['no_auth'], 401
+    return None, None
 
-# Return (error, code, content)
+
 def check_json(request):
+    """
+    Returns:
+        string: error
+        int: code
+        object: value
+    """
     if(not request.data):
         return (api_errors['no_req'], 400, None)
     if(not request.is_json):
@@ -30,3 +35,17 @@ def check_json(request):
     except ValueError as e:
         return (api_errors['no_json_valid'] + ': ' + str(e), 400, None)
     return (None, None, value)
+
+
+def check_schema(model, file_schema):
+    """
+    Returns:
+        string: error
+        int: code
+    """
+    schema = json.load(open(file_schema))
+    try:
+        validate(instance=model, schema=schema)
+    except Exception as e:
+        return (e, 400)
+    return (None, None)

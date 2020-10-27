@@ -1,9 +1,8 @@
 {
-    "path": "datasets/bb32b368-ba98-44e3-8120-f0bd54f5b104.csv",
-    "test_size": 0.1,
-    "target_column": "target",
-    "skip_columns": [
-        "age",
-        "sex"
-    ]
+    "path": "datasets/f833c8dd-bc60-453b-8842-76536728024a.csv",
+    "select_columns": [
+        "x",
+        "y"
+    ],
+    "target_column": "color"
 }
