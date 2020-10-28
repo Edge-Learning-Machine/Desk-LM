@@ -6,25 +6,6 @@ import os
 
 import error as error
 
-# Describe what kind of json you expect.
-predictSchema = {
-    "type": "object",
-    "properties": {
-        "model_id": {"type": "string"},
-        "samples": {
-            "type": "array",
-            "items": {
-                "type": "array",
-                "items": {
-                        "type": "number"
-                }
-            }
-        },
-        "n_preds": {"type": "number"}
-    },
-    "required": ["model_id", "samples"],
-    "additionalProperties": False
-}
 
 class Predict(object):
 
