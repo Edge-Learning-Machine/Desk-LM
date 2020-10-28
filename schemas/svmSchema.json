@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "properties": {
+        "estimator": {"type": "string"},
+        "C_exp": {
+            "type": "number"
+            },
+        "C_exp_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+                }
+            },
+        "C_exp_lowerlimit": {
+            "type": "number"
+            },
+        "C_exp_upperlimit": {
+            "type": "number"
+            },
+        "C_exp_step": {
+            "type": "number"
+            }
+    },
+    "required": ["estimator"],
+    "additionalProperties": false
+}

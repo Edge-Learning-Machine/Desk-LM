@@ -106,6 +106,9 @@ class OutputMgr(metaclass=abc.ABCMeta):
             print(error.errors['output_permission'])
 
     def saveTestingSet(X_test, y_test, estimator):
+        import pandas as pd
+        if isinstance(X_test, pd.core.series.Series):
+                X_test = X_test.to_frame()
         #outdir = OutputMgr.checkCreateDSDir(estimator.dataset.name, estimator.nick)
         outdirI = OutputMgr.getOutIncludeDir()
 
@@ -118,7 +121,7 @@ class OutputMgr(metaclass=abc.ABCMeta):
         myFile.write(f"#define N_FEATURE {X_test.shape[1]}\n")
         myFile.write(f"#endif\n\n")
         myFile.write(f"#ifndef N_ORIG_FEATURE\n")
-        myFile.write(f"#define N_ORIG_FEATURE {X_test.shape[1]}\n")
+        myFile.write(f"#define N_ORIG_FEATURE {X_test.shape[1]}\n") # Is this value correct??? xxx
         myFile.write(f"#endif\n\n")
         if estimator.is_regr:
             type_s = 'float'

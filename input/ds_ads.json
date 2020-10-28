@@ -1,0 +1,6 @@
+{
+    "path": "./datasets/ads.csv",
+    "test_size": 0.1,
+    "time_series_column" : "ADS",
+    "sep": ","
+}

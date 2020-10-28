@@ -1,0 +1,16 @@
+{
+    "type": "object",
+    "properties": {
+        "estimator": {
+            "type": "string"
+            },
+        "season_length": {
+            "type": "number"
+            },
+        "scaling_factor": {
+            "type": "number"
+            }
+    },
+    "required": ["estimator", "season_length"],
+    "additionalProperties": false
+}

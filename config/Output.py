@@ -8,23 +8,20 @@ import numpy as np
 
 import error as error
 
-# Describe what kind of json you expect.
-outputSchema = {
-    "type": "object",
-    "properties": {
-        "export_path": {"type": "string"},
-        "is_dataset_test": {"type": "boolean"},
-        "dataset_test_size": {"type": "number"},
-        "training_set_cap": {"type": "number"}
-    },
-    #"required": ["export_path"],
-    "additionalProperties": False
-}
 
 class Output(object):
 
     # Constructor
     def __init__(self, jsonFilePath):
+        try:
+            with open('schemas/outputSchema.json') as schema_file:
+                outputSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['output_config'])
+
         try:
             with open(jsonFilePath) as json_file:
                 try:

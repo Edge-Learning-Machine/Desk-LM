@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "properties": {
+        "estimator": {"type": "string"},
+        "n_neighbors": {
+            "type": "number"
+            },
+        "n_neighbors_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+                }
+            },
+        "n_neighbors_lowerlimit": {
+            "type": "number"
+            },
+        "n_neighbors_upperlimit": {
+            "type": "number"
+            },
+        "n_neighbors_step": {
+            "type": "number"
+            }
+    },
+    "required": ["estimator"],
+    "additionalProperties": false
+}

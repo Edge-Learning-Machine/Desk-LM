@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "properties": {
+        "scale": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "pca_values": {
+            "type": "array"
+        }
+    },
+    "additionalProperties": false
+}

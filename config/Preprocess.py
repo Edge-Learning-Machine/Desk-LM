@@ -1,42 +1,33 @@
 import json
 import jsonschema
 from jsonschema import validate
-
 import error as error
+from sklearn import preprocessing
 
-# Describe what kind of json you expect.
-preprocessSchema = {
-    "type": "object",
-    "properties": {
-        "scale": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-            },
-        "pca_values": {
-            "type": "array",
-            #"items": {
-            #    "type": "string"
-            #}
-            }
-    },
-    "additionalProperties": False
+
+possible_scalers = {
+    'StandardScaler':preprocessing.StandardScaler(),
+    #'RobustScaler':preprocessing.RobustScaler(),
+    'MinMaxScaler':preprocessing.MinMaxScaler(),
+    #'QuantileScaler':preprocessing.QuantileTransformer()
 }
 
-from sklearn import preprocessing
-possible_scalers = {'StandardScaler':preprocessing.StandardScaler(),
-                    #'RobustScaler':preprocessing.RobustScaler(),
-                    'MinMaxScaler':preprocessing.MinMaxScaler(),
-                    #'QuantileScaler':preprocessing.QuantileTransformer()
-                    }
 
 class Preprocess(object):
-
     # Constructor
     def __init__(self, jsonFilePath):
         self.scalers = []
         self.pca_values = []
+        
+        try:
+            with open('schemas/ppSchema.json') as schema_file:
+                preprocessSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['preprocess_config'])
+
         if jsonFilePath != None:
             try:
                 with open(jsonFilePath) as json_file:

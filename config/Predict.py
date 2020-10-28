@@ -19,7 +19,8 @@ predictSchema = {
                         "type": "number"
                 }
             }
-        }
+        },
+        "n_preds": {"type": "number"}
     },
     "required": ["model_id", "samples"],
     "additionalProperties": False
@@ -29,6 +30,14 @@ class Predict(object):
 
     # Constructor
     def __init__(self, jsonFilePath):
+        try:
+            with open('schemas/predictSchema.json') as schema_file:
+                predictSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['predict_config'])
         try:
             with open(jsonFilePath) as json_file:
                 try:
@@ -55,6 +64,8 @@ class Predict(object):
         try:
             self.model_id = jsonData['model_id']
             self.samples = jsonData['samples']
+            if 'n_preds' in jsonData:
+                self.n_preds = jsonData['n_preds']
         except Exception as err:
             template = "An exception of type {0} occurred. Arguments: {1!r}"
             message = template.format(type(err).__name__, err.args)

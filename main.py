@@ -4,162 +4,176 @@ import os
 import joblib as jl
 import sys
 import sklearn as skl
-
 import logger as lg
+import error as error
+
 
 class ELM(object):
 
-    predict = None
-    dataset = None
-    estimator = None
-    preprocess = None
-    modelselection = None
-    output = None
+    def __init__(self, args):
+        self.args = args
+        self.predict = None
+        self.dataset = None
+        self.estimator = None
+        self.preprocess = None
+        self.modelselection = None
+        self.output = None
+        self.training_set_cap = None
 
-    training_set_cap = None
-    args = None
-    uuid_str = None
-
-    @staticmethod
-    def init(args):
-
-        ELM.args = args
         print("Python version")
         print (sys.version)
         print("Numpy version")
         print(np.__version__) 
         print("Sklearn version")
         print(skl.__version__) 
-
+        
         sys.path.insert(1, 'config')
-        if args.predict != None:
+        if self.args.predict != None:
             import Predict as pred
             try:
-                ELM.predict = pred.Predict(args.predict)
+                self.predict = pred.Predict(self.args.predict)
             except ValueError as err:
-                return err
-            return 0
+                # return err
+                raise ValueError(err)
+            # return 0
         else:
             import Dataset as cds
             try:
-                ELM.dataset = cds.Dataset(args.dataset)
+                self.dataset = cds.Dataset(self.args.dataset)
             except ValueError as err:
-                return err
+                # return err
+                raise ValueError(err)
 
             import Estimator as ce
             try:
-                ELM.estimator = ce.Estimator.create(args.estimator, ELM.dataset)
+                self.estimator = ce.Estimator.create(self.args.estimator, self.dataset)
             except ValueError as err:
-                return err
+                # return err
+                raise ValueError(err)
 
             import Preprocess as pp
             try:
-                ELM.preprocess = pp.Preprocess(args.preprocess)
+                self.preprocess = pp.Preprocess(self.args.preprocess)
             except ValueError as err:
-                return err
+                # return err
+                raise ValueError(err)
 
             import ModelSelection as ms
             try:
-                ELM.modelselection = ms.ModelSelection(args.selection, ELM.estimator)
+                self.modelselection = ms.ModelSelection(self.args.selection, self.estimator)
             except ValueError as err:
-                return err
+                # return err
+                raise ValueError(err)
 
-            if args.output != None:
+            if self.args.output != None:
                 import Output
                 try:
-                    ELM.output = Output.Output(args.output)
+                    self.output = Output.Output(self.args.output)
                 except ValueError as err:
-                    return err
-                if ELM.estimator.nick=='knn':
-                    ELM.training_set_cap = ELM.output.training_set_cap
-            return 0
+                    # return err
+                    raise ValueError(err)
+                if self.estimator.nick=='knn':
+                    self.training_set_cap = self.output.training_set_cap
+            # return 0
 
-    @staticmethod
-    def process():
-        if ELM.predict != None:
-            m = jl.load(os.path.join('storage/', ELM.predict.model_id + '.pkl'))
-            p = m.predict(ELM.predict.samples)
-            print(p)
+    def process(self, model_id=None):
+        if self.predict != None:
+            m = jl.load(os.path.join('storage/', self.predict.model_id + '.pkl'))
+            if m.nick == 'TripleES':
+                if not hasattr(self.predict, 'n_preds'):
+                    raise ValueError(error.errors['miss_n_preds'])
+                p = m.predict_from_series(self.predict.samples, self.predict.n_preds)
+            else:
+                p = m.predict(self.predict.samples)
+            print(f'Predicted values: {p}')
             return p
         else:
             from sklearn.model_selection import train_test_split
+            shuffle = True
+            if self.estimator.nick == 'TripleES':
+                shuffle = False
             X_train, X_test, y_train, y_test = train_test_split(
-                ELM.dataset.X, ELM.dataset.y, train_size=ELM.training_set_cap, test_size=ELM.dataset.test_size, random_state=0)
+                self.dataset.X, self.dataset.y, train_size=self.training_set_cap, test_size=self.dataset.test_size, shuffle = shuffle)
 
             col_means = X_train.mean()
             X_train = X_train.fillna(col_means)
             X_test = X_test.fillna(col_means)
 
-            best_estimator = ELM.estimator.process(ELM.preprocess, ELM.modelselection, X_train, y_train)
+            best_estimator = self.estimator.process(self.preprocess, self.modelselection, X_train, y_train)
             #print(best_estimator.score(X_test, y_test))
             y_pred = best_estimator.predict(X_test)
 
             import sklearn.metrics as metrics
-            if hasattr(ELM.modelselection, 'metrics_average'):
-                score = getattr(metrics, ELM.modelselection.metrics)(y_test, y_pred, average=ELM.modelselection.metrics_average)
-                print(f'{ELM.modelselection.metrics}, average={ELM.modelselection.metrics_average} in testing set: {score}')
+            if hasattr(self.modelselection, 'metrics_average'):
+                score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred, average=self.modelselection.metrics_average)
+                print(f'{self.modelselection.metrics}, average={self.modelselection.metrics_average} in testing set: {score}')
             else:
-                if hasattr(ELM.modelselection, 'is_RMSE'):
-                    score = getattr(metrics, ELM.modelselection.metrics)(y_test, y_pred, squared=not ELM.modelselection.is_RMSE)
+                if hasattr(self.modelselection, 'is_RMSE'):
+                    score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred, squared=not self.modelselection.is_RMSE)
                     pref = ''
-                    if ELM.modelselection.is_RMSE:
+                    if self.modelselection.is_RMSE:
                         pref='root_'
-                    print(f'{pref}{ELM.modelselection.metrics} in testing set: {score}')
+                    print(f'{pref}{self.modelselection.metrics} in testing set: {score}')
                 else:
-                    score = getattr(metrics, ELM.modelselection.metrics)(y_test, y_pred)
-                    print(f'{ELM.modelselection.metrics} in testing set: {score}')
+                    score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred)
+                    print(f'{self.modelselection.metrics} in testing set: {score}')
+                #Add/change directly above if you want a different metrics (e.g., r2_score)
 
-            if ELM.args.store == True:
-                import uuid
-                ELM.uuid_str = str(uuid.uuid4())
-                jl.dump(best_estimator, './storage/' + ELM.uuid_str + '.pkl', compress = 3)
-                print('Stored model: ' + ELM.uuid_str)
+            if self.args.store == True:
+                if not model_id:
+                    import uuid
+                    model_id = str(uuid.uuid4())
+                jl.dump(best_estimator, './storage/' + model_id + '.pkl', compress = 3)
+                print(f'Stored model: {model_id}')
 
-            if ELM.args.output != None:
+            if self.args.output != None:
                 sys.path.insert(1, 'output')
                 import OutputMgr as omgr
                 omgr.OutputMgr.cleanOutDir()
 
-                ELM.estimator.output_manager.saveParams(best_estimator['esti'])
-
-                sys.path.insert(1, 'output')
-                import Preprocessing_OM
-                if 'scale' in best_estimator.named_steps:
-                    best_scaler = best_estimator['scale']
+                if self.estimator.nick == 'TripleES':
+                    self.estimator.output_manager.saveParams(best_estimator)
                 else:
-                    best_scaler = None
-                if 'reduce_dims' in best_estimator.named_steps:
-                    best_reduce_dims = best_estimator['reduce_dims']
-                else:
-                    best_reduce_dims = None
-                Preprocessing_OM.savePPParams(best_scaler, best_reduce_dims, ELM.estimator)
+                    self.estimator.output_manager.saveParams(best_estimator['esti'])
 
-                if ELM.estimator.nick == 'knn':
-                    omgr.OutputMgr.saveTrainingSet(X_train, y_train, ELM.estimator)
+                    sys.path.insert(1, 'output')
+                    import Preprocessing_OM
+                    if 'scale' in best_estimator.named_steps:
+                        best_scaler = best_estimator['scale']
+                    else:
+                        best_scaler = None
+                    if 'reduce_dims' in best_estimator.named_steps:
+                        best_reduce_dims = best_estimator['reduce_dims']
+                    else:
+                        best_reduce_dims = None
+                    Preprocessing_OM.savePPParams(best_scaler, best_reduce_dims, self.estimator)
 
-                if ELM.output != None:
-                    if ELM.output.is_dataset_test:
-                        if ELM.output.dataset_test_size == 1:
-                            omgr.OutputMgr.saveTestingSet(X_test, y_test, ELM.estimator)
-                        elif ELM.output.dataset_test_size < 1:
-                            n_tests = int(y_test * ELM.output.dataset_test_size.shape[0])
-                            omgr.OutputMgr.saveTestingSet(X_test[0:n_tests], y_test[0:n_tests], ELM.estimator)
-                        elif ELM.output.dataset_test_size != None:
-                            omgr.OutputMgr.saveTestingSet(X_test[0:ELM.output.dataset_test_size].shape[0], y_test[0:ELM.output.dataset_test_size].shape[0], ELM.estimator)
-                        elif ELM.output.dataset_test_size == None:
-                            omgr.OutputMgr.saveTestingSet(X_test, y_test, ELM.estimator)
+                    if self.estimator.nick == 'knn':
+                        omgr.OutputMgr.saveTrainingSet(X_train, y_train, self.estimator)
 
-                    if ELM.output.export_path != None:
+                if self.output != None:
+                    if self.output.is_dataset_test:
+                        if self.output.dataset_test_size == 1:
+                            omgr.OutputMgr.saveTestingSet(X_test, y_test, self.estimator)
+                        elif self.output.dataset_test_size < 1:
+                            n_tests = int(y_test * self.output.dataset_test_size.shape[0])
+                            omgr.OutputMgr.saveTestingSet(X_test[0:n_tests], y_test[0:n_tests], self.estimator)
+                        elif self.output.dataset_test_size != None:
+                            omgr.OutputMgr.saveTestingSet(X_test[0:self.output.dataset_test_size].shape[0], y_test[0:self.output.dataset_test_size].shape[0], self.estimator)
+                        elif self.output.dataset_test_size == None:
+                            omgr.OutputMgr.saveTestingSet(X_test, y_test, self.estimator)
+
+                    if self.output.export_path != None:
                         from distutils.dir_util import copy_tree
-                        omgr.OutputMgr.cleanSIMDirs(f'{ELM.output.export_path}/')
+                        omgr.OutputMgr.cleanSIMDirs(f'{self.output.export_path}/')
                         fromDirectory = f"./out/include"
-                        toDirectory = f"{ELM.output.export_path}/dlm/include"
+                        toDirectory = f"{self.output.export_path}/dlm/include"
                         copy_tree(fromDirectory, toDirectory)
                         fromDirectory = f"./out/source"
-                        toDirectory = f"{ELM.output.export_path}/dlm/source"
+                        toDirectory = f"{self.output.export_path}/dlm/source"
                         copy_tree(fromDirectory, toDirectory)
                         fromDirectory = f"./out/model"
-                        toDirectory = f"{ELM.output.export_path}/dlm/model"
+                        toDirectory = f"{self.output.export_path}/dlm/model"
                         copy_tree(fromDirectory, toDirectory)
         print('The end')
 
@@ -175,8 +189,8 @@ if __name__ == '__main__':
     parser.add_argument('--store', action="store_true")
     args = parser.parse_args()
     
-    res = ELM.init(args)
-    if  res == 0:
-        ELM.process()
-    else:
-        print(res)
+    try:
+        elm = ELM(args)
+        elm.process()
+    except ValueError as error:
+        print(error)

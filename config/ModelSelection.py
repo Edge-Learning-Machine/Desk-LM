@@ -4,23 +4,6 @@ from jsonschema import validate
 
 import error as error
 
-# Describe what kind of json you expect.
-cvSchema = {
-    "type": "object",
-    "properties": {
-        "cv": {
-            "type": "number"
-            },
-        "scoring": {
-            "type": "string"
-            },
-        "verbose": {
-            "type": "number"
-            }
-    },
-    # "required": ["cv"],
-    "additionalProperties": False
-}
 
 class ModelSelection(object):
 
@@ -28,6 +11,16 @@ class ModelSelection(object):
     def __init__(self, jsonFilePath, estimator):
         self.cv = None
         self.verbose = 0
+        
+        try:
+            with open('schemas/msSchema.json') as schema_file:
+                cvSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['modelselection_config'])
+
         if jsonFilePath != None:
             try:
                 with open(jsonFilePath) as json_file:
