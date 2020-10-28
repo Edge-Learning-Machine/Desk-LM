@@ -7,19 +7,6 @@ import requests
 from commons.status import *
 from jsonschema import validate
 
-def reset_elm_config(elm):
-    elm.predict = None
-    elm.dataset = None
-    elm.estimator = None
-    elm.preprocess = None
-    elm.modelselection = None
-    elm.output = None
-
-    elm.training_set_cap = None
-    elm.args = None
-    elm.uuid_str = None
-    return
-
 
 def elm_manager(mode, database, id, value, app, content):
     # configurazione args per elm
@@ -58,26 +45,18 @@ def elm_manager(mode, database, id, value, app, content):
         sys.path.append('./')
         from main import ELM
 
-        # inizializzazione di elm
-        reset_elm_config(ELM)
-        elm = ELM.init(args)
-
-        # elimino il file di storage creato precedentemente (ne verrà creato uno nuovo)
-        if 'storage' in value:
-            if os.path.isfile('storage/' + value['storage'] + '.pkl'):
-                os.remove('storage/' + value['storage'] + '.pkl')
-
-        if elm == 0:
-            # elaborazione di elm
-            ELM.process()
-
+        # elm start
+        try:
+            elm = ELM(args)
+            elm.process(value['_id'])
             # aggiorno il database
-            error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':{'status.perc':100,'storage':ELM.uuid_str}})
+            error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':{'status.perc':100,'storage':value['_id']}})
             if error:
                 app.logger.error(error)
                 return
-        else:
-            app.logger.error(elm)
+        except ValueError as err:
+            app.logger.error(err)
+            # aggiorno il database
             error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':{'status.error':str(elm)}})
             if error:
                 app.logger.error(error)
@@ -119,15 +98,11 @@ def elm_manager(mode, database, id, value, app, content):
         sys.path.append('./')
         from main import ELM
 
-        # inizializzazione di elm
-        reset_elm_config(ELM)
-        elm = ELM.init(args)
-
-        if elm == 0:
-            # elaborazione di elm
-            result = ELM.process()
+        # elm start 
+        try:
+            elm = ELM(args)
+            predict = elm.process()
             app.logger.info("Done predict")
-            return result
-        else:
-            # app.logger.error(elm)
-            return elm
+            return predict
+        except ValueError as err:
+            return err

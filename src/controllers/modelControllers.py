@@ -20,11 +20,9 @@ def get_models_route(request, database):
     if error:
         return answer(error, 404)
 
-    result = {}
-    i = 1
+    result = []
     for value in values:
-        result[i] = value['_id']
-        i += 1
+        result.append(value['_id'])
 
     return answer(result, 200)
 
@@ -58,13 +56,13 @@ def post_model_route(request, database):
         return answer(error, code)
 
     # verifico parametri modello
-    error, code = check_schema(content, 'jsonSchema/api_model_schema.json')
+    error, code = check_schema(content, f'{os.getenv("SCHEMAS_PATH")}apiModelSchema.json')
     if error:
         message = api_errors['no_params'] + ' - ' + 'api model'
         return answer(message, code)
 
     for param in content:
-        error, code = check_schema(content[param], 'jsonSchema/'+param+'Schema.json')
+        error, code = check_schema(content[param], f'{os.getenv("SCHEMAS_PATH")}{param}Schema.json')
         if error:
             message = api_errors['no_params'] + ' - ' + param
             return answer(message, code)
@@ -76,7 +74,7 @@ def post_model_route(request, database):
     # aggiungo valori in risposta
     new_model['_id'] = str(uuid.uuid4())
     new_model['status'] = model_status[0]
-    new_model['output'] = os.getenv('ZIP_PATH') + new_model['_id'] +'.zip'
+    new_model['output'] = f'{os.getenv("ZIP_PATH")}{new_model["_id"]}.zip'
     new_model['timestamp'] = str(datetime.now())
 
     # sposto webhook fuori dal model
@@ -121,7 +119,7 @@ def post_model_trainingset_route(request, database, id):
         value['model']['ds'][item] = json.loads(request.form[item])
 
     # controllo parametri del ds
-    error, code = check_schema(value["model"]['ds'], 'jsonSchema/dsSchema.json')
+    error, code = check_schema(value["model"]['ds'], f'{os.getenv("SCHEMAS_PATH")}dsSchema.json')
     if error:
         message = api_errors['no_params'] + ' - ' + 'ds'
         return answer(message, code)
@@ -192,9 +190,11 @@ def put_model_route(request, database, id, app):
             
         # avvio elm predizione
         from elm_manager import elm_manager
-        result = elm_manager('predict', database, id, value, app, content)
-
-        return answer({"predict": result.tolist()}, 200)
+        try:
+            result = elm_manager('predict', database, id, value, app, content)
+            return answer({"predict": result.tolist()}, 200)
+        except:
+            return answer("Insert valid samples", 400)
     else:
         return answer("Bad request", 400)
 
@@ -248,8 +248,8 @@ def delete_model_route(request, database, id):
 
     # elimino lo storage (se esiste)
     if 'storage' in value:
-        if os.path.isfile('storage/' + value['storage'] + '.pkl'):
-            os.remove('storage/' + value['storage'] + '.pkl')
+        if os.path.isfile(f'{os.getenv("STORAGE_PATH")}{value["storage"]}.pkl'):
+            os.remove(f'{os.getenv("STORAGE_PATH")}{value["storage"]}.pkl')
 
     # elimino il documento dal database
     error = database.delete_one(os.getenv('MODELS_COLLECTION'), {'_id':id})

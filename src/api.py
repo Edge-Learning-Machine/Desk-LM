@@ -21,6 +21,11 @@ def run():
             return 
         print('Default client created!')
 
+    # Create necessary folders
+    for dir in [os.getenv('DATASETS_PATH'), os.getenv('INPUT_PATH'), os.getenv('OUTPUT_PATH'), os.getenv('ZIP_PATH'), os.getenv('STORAGE_PATH')]:
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
     # Start server
     from server import server
     server(database)
