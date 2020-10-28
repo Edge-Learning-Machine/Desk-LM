@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "properties": {
+        "cv": {
+            "type": "number"
+        },
+        "scoring": {
+            "type": "string"
+        },
+        "verbose": {
+            "type": "number"
+        }
+    },
+    "additionalProperties": false
+}

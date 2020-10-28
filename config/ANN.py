@@ -14,92 +14,19 @@ from keras.models import Model, Sequential
 
 import numpy as np
 
-# Describe what kind of json you expect.
-annSchema = {
-    "type": "object",
-    "properties": {
-        "estimator": {"type": "string"},
-        
-         "epochs": {
-            "type": "number"
-            },
-        "epochs_array": {
-            "type": "array",
-            "items": {
-                "type": "number"
-                }
-            },
-        "epochs_lowerlimit": {
-            "type": "number"
-            },
-        "epochs_upperlimit": {
-            "type": "number"
-            },
-        "epochs_step": {
-            "type": "number"
-            },
-
-        "batch_size": {
-            "type": "number"
-            },
-        "batch_size_array": {
-            "type": "array",
-            "items": {
-                "type": "number"
-                }
-            },
-        "batch_size_lowerlimit": {
-            "type": "number"
-            },
-        "batch_size_upperlimit": {
-            "type": "number"
-            },
-        "batch_size_step": {
-            "type": "number"
-            },
-
-        "dropout": {
-            "type": "number"
-            },
-        "dropout_array": {
-            "type": "array",
-            "items": {
-                "type": "number"
-                }
-            },
-        "dropout_lowerlimit": {
-            "type": "number"
-            },
-        "dropout_upperlimit": {
-            "type": "number"
-            },
-        "dropout_n_steps": {
-            "type": "number"
-            },
-        "activation": {
-            "type": "array",
-            "items": {
-                "type": "string"
-                }
-            },
-        "hidden_layers": {
-            "type": "array",
-            "items": {
-                "type": "array",
-            "items": {
-                "type": "number"
-                }
-                }
-            }
-    },
-    "required": ["estimator"],
-    "additionalProperties": False
-}
 
 class ANN(Estimator):
     def __init__(self, jsonData):
         super().__init__()
         self.nick = 'ann'
+        try:
+            with open('schemas/annSchema.json') as schema_file:
+                annSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['ann_config'])
         try:
             validate(instance=jsonData, schema=annSchema)
         except jsonschema.exceptions.ValidationError as err:

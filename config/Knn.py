@@ -7,38 +7,19 @@ import abc
 import error as error
 from Estimator import Estimator
 
-# Describe what kind of json you expect.
-knnSchema = {
-    "type": "object",
-    "properties": {
-        "estimator": {"type": "string"},
-        "n_neighbors": {
-            "type": "number"
-            },
-        "n_neighbors_array": {
-            "type": "array",
-            "items": {
-                "type": "number"
-                }
-            },
-        "n_neighbors_lowerlimit": {
-            "type": "number"
-            },
-        "n_neighbors_upperlimit": {
-            "type": "number"
-            },
-        "n_neighbors_step": {
-            "type": "number"
-            }
-    },
-    "required": ["estimator"],
-    "additionalProperties": False
-}
 
 class Knn(Estimator):
     def __init__(self, jsonData):
         super().__init__()
         self.nick = 'knn'
+        try:
+            with open('schemas/knnSchema.json') as schema_file:
+                knnSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['knn_config'])
         try:
             validate(instance=jsonData, schema=knnSchema)
         except jsonschema.exceptions.ValidationError as err:

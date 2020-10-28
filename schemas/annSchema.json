@@ -1,0 +1,80 @@
+{
+    "type": "object",
+    "properties": {
+        "estimator": {"type": "string"},
+        
+         "epochs": {
+            "type": "number"
+            },
+        "epochs_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+                }
+            },
+        "epochs_lowerlimit": {
+            "type": "number"
+            },
+        "epochs_upperlimit": {
+            "type": "number"
+            },
+        "epochs_step": {
+            "type": "number"
+            },
+
+        "batch_size": {
+            "type": "number"
+            },
+        "batch_size_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+                }
+            },
+        "batch_size_lowerlimit": {
+            "type": "number"
+            },
+        "batch_size_upperlimit": {
+            "type": "number"
+            },
+        "batch_size_step": {
+            "type": "number"
+            },
+
+        "dropout": {
+            "type": "number"
+            },
+        "dropout_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+                }
+            },
+        "dropout_lowerlimit": {
+            "type": "number"
+            },
+        "dropout_upperlimit": {
+            "type": "number"
+            },
+        "dropout_n_steps": {
+            "type": "number"
+            },
+        "activation": {
+            "type": "array",
+            "items": {
+                "type": "string"
+                }
+            },
+        "hidden_layers": {
+            "type": "array",
+            "items": {
+                "type": "array",
+            "items": {
+                "type": "number"
+                }
+                }
+            }
+    },
+    "required": ["estimator"],
+    "additionalProperties": false
+}

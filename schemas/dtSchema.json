@@ -1,0 +1,81 @@
+{
+    "type": "object",
+    "properties": {
+        "estimator": {"type": "string"},
+         "max_depth": {
+            "type": "number"
+        },
+        "max_depth_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "max_depth_lowerlimit": {
+            "type": "number"
+        },
+        "max_depth_upperlimit": {
+            "type": "number"
+        },
+        "max_depth_step": {
+            "type": "number"
+        },
+        "min_samples_split": {
+            "type": "number"
+        },
+        "min_samples_split_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "min_samples_split_lowerlimit": {
+            "type": "number"
+        },
+        "min_samples_split_upperlimit": {
+            "type": "number"
+        },
+        "min_samples_split_step": {
+            "type": "number"
+        },
+
+        "min_samples_leaf": {
+            "type": "number"
+        },
+        "min_samples_leaf_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "min_samples_leaf_lowerlimit": {
+            "type": "number"
+        },
+        "min_samples_leaf_upperlimit": {
+            "type": "number"
+        },
+        "min_samples_leaf_step": {
+            "type": "number"
+        },
+        "max_leaf_nodes": {
+            "type": "number"
+        },
+        "max_leaf_nodes_array": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "max_leaf_nodes_lowerlimit": {
+            "type": "number"
+        },
+        "max_leaf_nodes_upperlimit": {
+            "type": "number"
+        },
+        "max_leaf_nodes_step": {
+            "type": "number"
+        }
+    },
+    "required": ["estimator"],
+    "additionalProperties": false
+}

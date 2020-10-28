@@ -5,42 +5,22 @@ from jsonschema import validate
 import os
 
 import numpy as np
-
 import error as error
 
-# Describe what kind of json you expect.
-datasetSchema = {
-    "type": "object",
-    "properties": {
-        "path": {"type": "string"},
-        "skip_rows": {"type": "number"},
-        "skip_columns": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-            },
-        "select_columns": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-            },
-        "target_column": {"type": "string"},
-        "time_series_column": {"type": "string"},
-        "sep": {"type": "string"},
-        "decimal": {"type": "string"},
-        "test_size": {"type": "number"},
-        "categorical_multiclass": {"type": "boolean"}
-    },
-    "required": ["path"],
-    "additionalProperties": False
-}
 
 class Dataset(object):
 
     # Constructor
     def __init__(self, jsonFilePath):
+        try:
+            with open('schemas/dsSchema.json') as schema_file:
+                datasetSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['ds_config'])
+        
         try:
             with open(jsonFilePath) as json_file:
                 try:

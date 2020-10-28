@@ -31,6 +31,14 @@ class Predict(object):
     # Constructor
     def __init__(self, jsonFilePath):
         try:
+            with open('schemas/predictSchema.json') as schema_file:
+                predictSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['predict_config'])
+        try:
             with open(jsonFilePath) as json_file:
                 try:
                     jsonData = json.load(json_file)            

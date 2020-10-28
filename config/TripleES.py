@@ -25,28 +25,19 @@ from tqdm import tqdm_notebook
 import warnings                                  # `do not disturbe` mode
 warnings.filterwarnings('ignore')
 
-# Describe what kind of json you expect.
-tripleESSchema = {
-    "type": "object",
-    "properties": {
-        "estimator": {
-            "type": "string"
-            },
-        "season_length": {
-            "type": "number"
-            },
-        "scaling_factor": {
-            "type": "number"
-            }
-    },
-    "required": ["estimator", "season_length"],
-    "additionalProperties": False
-}
 
 class TripleES(Estimator):
     def __init__(self, jsonData):
         super().__init__()
         self.nick = 'TripleES'
+        try:
+            with open('schemas/tripleESSchema.json') as schema_file:
+                tripleESSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['tripleES_config'])
         try:
             validate(instance=jsonData, schema=tripleESSchema)
         except jsonschema.exceptions.ValidationError as err:

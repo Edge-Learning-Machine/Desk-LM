@@ -10,38 +10,19 @@ import sys
 sys.path.insert(1, 'utils')
 import dict_utils
 
-# Describe what kind of json you expect.
-svmSchema = {
-    "type": "object",
-    "properties": {
-        "estimator": {"type": "string"},
-        "C_exp": {
-            "type": "number"
-            },
-        "C_exp_array": {
-            "type": "array",
-            "items": {
-                "type": "number"
-                }
-            },
-        "C_exp_lowerlimit": {
-            "type": "number"
-            },
-        "C_exp_upperlimit": {
-            "type": "number"
-            },
-        "C_exp_step": {
-            "type": "number"
-            }
-    },
-    "required": ["estimator"],
-    "additionalProperties": False
-}
 
 class SVM(Estimator):
     def __init__(self, jsonData):
         super().__init__()
         self.nick = 'svm'
+        try:
+            with open('schemas/svmSchema.json') as schema_file:
+                svmSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['svm_config'])
         try:
             validate(instance=jsonData, schema=svmSchema)
         except jsonschema.exceptions.ValidationError as err:

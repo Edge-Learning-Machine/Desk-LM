@@ -6,19 +6,20 @@ import abc
 
 import error as error
 
-# Describe what kind of json you expect.
-estimatorSchema = {
-    "type": "object",
-    "properties": {
-        "estimator": {"type": "string"}
-    },
-    "required": ["estimator"]
-}
 
 class Estimator(object):
 
     @staticmethod
     def create(jsonFilePath, dataset):
+        try:
+            with open('schemas/estSchema.json') as schema_file:
+                estimatorSchema = json.load(schema_file)
+        except FileNotFoundError as err:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['estimator_config'])
+        
         try:
             with open(jsonFilePath) as json_file:
                 try:

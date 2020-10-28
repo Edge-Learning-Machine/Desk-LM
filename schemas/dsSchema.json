@@ -1,0 +1,31 @@
+{
+    "type": "object",
+    "properties": {
+        "path": {"type": "string"},
+        "skip_rows": {"type": "number"},
+        "skip_columns": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+            },
+        "select_columns": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+            },
+        "target_column": {"type": "string"},
+        "time_series_column": {"type": "string"},
+        "sep": {"type": "string"},
+        "decimal": {"type": "string"},
+        "test_size": {"type": "number"},
+        "categorical_multiclass": {"type": "boolean"}
+    },
+    "anyOf": [
+        { "required": ["path","select_columns"] },
+        { "required": ["path","skip_columns"] },
+        { "required": ["path","time_series_column"] }
+    ],
+    "additionalProperties": false
+}
