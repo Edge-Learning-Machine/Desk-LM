@@ -17,5 +17,6 @@
             "type": "string"
         }
     },
-    "required": [ "est", "pp", "ms", "output" ]
+    "required": [ "est", "pp", "ms", "output" ],
+    "additionalProperties": false
 }
