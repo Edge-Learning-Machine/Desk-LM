@@ -1,0 +1,14 @@
+version: "3"
+services:
+    api:
+        build: .
+        container_name: api
+        depends_on: 
+            - mongodb
+        ports:
+            - "5000:5000"
+    mongodb:
+        container_name: mongodb
+        image: mongo
+        ports:
+            - "27017:27017"

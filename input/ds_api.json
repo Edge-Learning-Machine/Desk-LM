@@ -1,0 +1,8 @@
+{
+    "path": "datasets/4e6fe24b-5448-42d7-aeca-b47b6f2340a0.csv",
+    "select_columns": [
+        "x",
+        "y"
+    ],
+    "target_column": "color"
+}
