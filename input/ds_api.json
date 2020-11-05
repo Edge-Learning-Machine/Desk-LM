@@ -1,8 +1,9 @@
 {
-    "path": "datasets/1583b2d8-7713-4237-b375-03bfc98f8cd6.csv",
-    "select_columns": [
-        "x",
-        "y"
-    ],
-    "target_column": "label"
+    "path": "datasets/9c50cf1e-0de6-42f6-905f-e5e81bb35c2c.csv",
+    "target_column": "target",
+    "test_size": 0.1,
+    "skip_columns": [
+        "age",
+        "sex"
+    ]
 }
