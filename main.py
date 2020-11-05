@@ -79,12 +79,13 @@ class ELM(object):
     def process(self, model_id=None):
         if self.predict != None:
             m = jl.load(os.path.join('storage/', self.predict.model_id + '.pkl'))
-            # if m.nick == 'TripleES':
-            #     if not hasattr(self.predict, 'n_preds'):
-            #         raise ValueError(error.errors['miss_n_preds'])
-            #     p = m.predict_from_series(self.predict.samples, self.predict.n_preds)
-            # else:
-            p = m.predict(self.predict.samples)
+            from TripleES import TripleES
+            if isinstance(m, TripleES):
+                if not hasattr(self.predict, 'n_preds'):
+                    raise ValueError(error.errors['miss_n_preds'])
+                p = m.predict_from_series(self.predict.samples, self.predict.n_preds)
+            else:
+                p = m.predict(self.predict.samples)
             print(f'Predicted values: {p}')
             return p
         else:

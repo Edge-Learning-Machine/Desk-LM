@@ -2,6 +2,7 @@ import os
 import uuid
 import json
 import threading
+import numpy
 from commons.error import *
 from commons.status import *
 from commons.checker import *
@@ -22,7 +23,9 @@ def get_models_route(request, database):
 
     result = []
     for value in values:
-        result.append(value['_id'])
+        error, model = database.find_one(os.getenv('MODELS_COLLECTION'), {'_id':str(value['_id'])})
+        if error: return answer(error, 404)
+        result.append(model)
 
     return answer(result, 200)
 
@@ -187,14 +190,25 @@ def put_model_route(request, database, id, app):
             return answer("Wait for the training", 400)
         if not 'samples' in content:
            return answer("Missing samples", 400)
+
+        # aggiungo il model_id e rimuovo 'predict' dalla richiesta
+        del content['predict']
+        content['model_id'] = value['storage']
+
+        # controllo parametri del pr
+        error, code = check_schema(content, f'{os.getenv("SCHEMAS_PATH")}predictSchema.json')
+        if error:
+            message = api_errors['no_params'] + ' - ' + 'predict'
+            return answer(message, code)
             
         # avvio elm predizione
         from elm_manager import elm_manager
         try:
             result = elm_manager('predict', database, id, value, app, content)
-            return answer({"predict": result.tolist()}, 200)
-        except:
-            return answer("Insert valid samples", 400)
+            if isinstance(result, numpy.ndarray): result = result.tolist()
+            return answer({"predict": result}, 200)
+        except ValueError as err:
+            return answer(str(err), 400)
     else:
         return answer("Bad request", 400)
 

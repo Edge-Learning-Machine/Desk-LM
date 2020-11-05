@@ -57,7 +57,7 @@ def elm_manager(mode, database, id, value, app, content):
         except ValueError as err:
             app.logger.error(err)
             # aggiorno il database
-            error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':{'status.error':str(elm)}})
+            error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':{'status.error':str(err)}})
             if error:
                 app.logger.error(error)
             return
@@ -87,13 +87,9 @@ def elm_manager(mode, database, id, value, app, content):
 
         app.logger.info("Start predict")
 
-        # configurazione dei file json
-        predict = {
-            'model_id': value['storage'],
-            'samples': content['samples']
-        }
+        # salvataggio del file json
         with open(f'{os.getenv("INPUT_PATH")}pr_api.json','w') as file:
-            json.dump(predict, file, indent=4)
+            json.dump(content, file, indent=4)
 
         sys.path.append('./')
         from main import ELM
@@ -105,4 +101,5 @@ def elm_manager(mode, database, id, value, app, content):
             app.logger.info("Done predict")
             return predict
         except ValueError as err:
-            return err
+            app.logger.error(err)
+            raise ValueError(err)
