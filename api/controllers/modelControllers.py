@@ -168,49 +168,51 @@ def put_model_route(request, database, id, app):
     if value['status']['code'] < 1:
         return answer(api_errors['no_csv'], 400)
 
-    # avvio elm addestramento
-    if 'evaluate' in content and content['evaluate']:
-        # aggiorno stato e database
-        value['status'] = model_status[2]
-        error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':value})
-        if error:
-            return answer(error, 404)
+    # verifico la modalità e avvio elm
+    if 'mode' in content:
+        if content['mode'] == 'evaluate':
+            # aggiorno stato e database
+            value['status'] = model_status[2]
+            error = database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':value})
+            if error:
+                return answer(error, 404)
 
-        # avvio elm addestramento in parallelo (thread)
-        from elm_manager import elm_manager
-        elm_thread_evaluate = threading.Thread(target=elm_manager, args=('evaluate', database, id, value, app, content, ))
-        elm_thread_evaluate.start()
+            # avvio elm addestramento in parallelo (thread)
+            from elm_manager import elm_manager
+            elm_thread_evaluate = threading.Thread(target=elm_manager, args=('evaluate', database, id, value, app, content, ))
+            elm_thread_evaluate.start()
 
-        return answer(value, 200)
+            return answer(value, 200)
 
-    # avvio elm predizione
-    elif 'predict' in content and content['predict']:
-        # verifico che sia gia stato addestrato
-        if value['status']['code'] < 4:
-            return answer("Wait for the training", 400)
-        if not 'samples' in content:
-           return answer("Missing samples", 400)
+        elif content['mode'] == 'predict':
+            # verifico che sia gia stato addestrato
+            if value['status']['code'] < 4:
+                return answer("Wait for the training", 400)
+            if not 'samples' in content:
+                return answer("Missing samples", 400)
 
-        # aggiungo il model_id e rimuovo 'predict' dalla richiesta
-        del content['predict']
-        content['model_id'] = value['storage']
+            # aggiungo il model_id e rimuovo 'predict' dalla richiesta
+            del content['mode']
+            content['model_id'] = value['storage']
 
-        # controllo parametri del pr
-        error, code = check_schema(content, f'{os.getenv("SCHEMAS_PATH")}predictSchema.json')
-        if error:
-            message = api_errors['no_params'] + ' - ' + 'predict'
-            return answer(message, code)
-            
-        # avvio elm predizione
-        from elm_manager import elm_manager
-        try:
-            result = elm_manager('predict', database, id, value, app, content)
-            if isinstance(result, numpy.ndarray): result = result.tolist()
-            return answer({"predict": result}, 200)
-        except ValueError as err:
-            return answer(str(err), 400)
+            # controllo parametri del pr
+            error, code = check_schema(content, f'{os.getenv("SCHEMAS_PATH")}predictSchema.json')
+            if error:
+                message = api_errors['no_params'] + ' - ' + 'predict'
+                return answer(message, code)
+                
+            # avvio elm predizione
+            from elm_manager import elm_manager
+            try:
+                result = elm_manager('predict', database, id, value, app, content)
+                if isinstance(result, numpy.ndarray): result = result.tolist()
+                return answer({"predict": result}, 200)
+            except ValueError as err:
+                return answer(str(err), 400)
+        else:
+            return answer("'"+content['mode'] + "' " + api_errors['wrong_mode'], 400)
     else:
-        return answer("Bad request", 400)
+        return answer(api_errors['no_mode'], 400)
 
 
 def get_model_download_route(request, database, id):
