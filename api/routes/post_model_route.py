@@ -31,6 +31,12 @@ def post_model_route(request, database):
         except ValueError as error:
             return bad(error)
 
+    # verifico che il name non sia giè stato usato
+    if(database.exist(os.getenv('MODELS_COLLECTION'),{'name':content['name']})):
+        error = api_errors['request']
+        error['details'] = f'The name is already been used ({content["name"]})'
+        return bad(error)
+
     # creazione nuovo modello
     new_model = {}
     new_model['model'] = content

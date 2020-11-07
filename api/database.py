@@ -67,3 +67,11 @@ class Database(object):
             error['details'] = str(e)
             raise ValueError(error)
         return num
+
+    def exist(self, collection, filter):
+        try:
+            self.find_one(collection, filter)
+        except:
+            return False
+        return True
+        

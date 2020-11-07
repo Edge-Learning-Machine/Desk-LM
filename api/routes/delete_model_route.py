@@ -18,6 +18,8 @@ def delete_model_route(request, database, id):
     except ValueError as error:
         return bad(error)
 
+    # recupero il name
+    name = value['name']
 
     # elimino il file csv (se esiste)
     if 'ds' in value['model']:
@@ -40,4 +42,4 @@ def delete_model_route(request, database, id):
     except ValueError as e:
         return bad(error)
 
-    return answer({'succes':'Model deleted!'})
+    return answer({'succes':f'Model [{name}] deleted!'})
