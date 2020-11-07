@@ -1,8 +1,8 @@
 version: "3"
 services:
-    api:
+    elm:
         build: .
-        container_name: api
+        container_name: elm
         depends_on: 
             - mongodb
         ports:

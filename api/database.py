@@ -1,5 +1,6 @@
 import os
 from pymongo import MongoClient
+from commons.error import api_errors
 
 
 class Database(object):
@@ -12,64 +13,57 @@ class Database(object):
         except Exception as error:
             print('Database not connected! ('+ str(error) +')')
 
-    
     def insert_one(self, collection, data):
-        """
-        Returns:
-            string: error
-        """
         try:
             self.DATABASE[collection].insert_one(data)
-        except Exception as error:
-            return str(error)
-        return None
+        except Exception as e:
+            error = api_errors['database']
+            error['details'] = str(e)
+            raise ValueError(error)
 
-    
     def find(self, collection, query):
-        """
-        Returns:
-            string: error
-            array: values
-        """
         try:
-            value = self.DATABASE[collection].find({}, query)
-        except Exception as error:
-            return str(error), None
-        return None, value
+            values = self.DATABASE[collection].find({}, query)
+        except Exception as e:
+            error = api_errors['database']
+            error['details'] = str(e)
+            raise ValueError(error)
+        return values
 
-    # Return (error, value)
     def find_one(self, collection, query):
-        """
-        Returns:
-            string: error
-            object: value
-        """
         try:
             value = self.DATABASE[collection].find_one(query)
-        except Exception as error:
-            return str(error), None
-        return None, value
+        except Exception as e:
+            error = api_errors['database']
+            error['details'] = str(e)
+            raise ValueError(error)
+        if not value:
+            error = api_errors['database']
+            error['details'] = 'Document not found'
+            raise ValueError(error)
+        return value
 
-    
     def update_one(self, collection, filtering, query):
-        """
-        Returns:
-            string: error
-        """
         try:
             self.DATABASE[collection].update_one(filtering, query)
-        except Exception as error:
-            return str(error)
-        return None
-
-    
+        except Exception as e:
+            error = api_errors['database']
+            error['details'] = str(e)
+            raise ValueError(error)
+ 
     def delete_one(self, collection, data):
-        """
-        Returns:
-            string: error
-        """
         try:
             self.DATABASE[collection].delete_one(data)
-        except Exception as error:
-            return str(error)
-        return None
+        except Exception as e:
+            error = api_errors['database']
+            error['details'] = str(e)
+            raise ValueError(error)
+
+    def count_document(self, collection):
+        try:
+            num = self.DATABASE[collection].count()
+        except Exception as e:
+            error = api_errors['database']
+            error['details'] = str(e)
+            raise ValueError(error)
+        return num

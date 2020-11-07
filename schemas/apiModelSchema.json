@@ -1,22 +1,13 @@
 {
     "type": "object",
     "properties": {
-        "est": { 
-            "type": "object"
-        },
-        "pp": { 
-            "type": "object"
-        },
-        "ms": { 
-            "type": "object"
-        },
-        "output": { 
-            "type": "object"
-        },
-        "webhook": { 
-            "type": "string"
-        }
+        "name": { "type": "string" },
+        "est": { "type": "object" },
+        "pp": { "type": "object" },
+        "ms": { "type": "object" },
+        "output": { "type": "object" },
+        "webhook": { "type": "string" }
     },
-    "required": [ "est", "pp", "ms", "output" ],
+    "required": [ "name", "est", "pp", "ms", "output" ],
     "additionalProperties": false
 }

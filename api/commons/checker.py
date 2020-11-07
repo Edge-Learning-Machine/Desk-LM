@@ -1,51 +1,49 @@
 import os
 import json
 import jsonpickle
+import jsonschema
 from commons.error import *
 from jsonschema import validate
 
 
-def check_authorization(request, database):
-    """
-    Returns:
-        string: error
-        int: code
-    """
-    error, value = database.find_one(os.getenv('CLIENTS_COLLECTION'),{'token':request.headers.get('Authorization')})
-    if error:
-        return error, 404
-    if not value:
-        return api_errors['no_auth'], 401
-    return None, None
-
+def check_authorization(database, token):
+    try:
+        value = database.find_one(os.getenv('CLIENTS_COLLECTION'),{'token':token})
+    except ValueError as error:
+        raise error
 
 def check_json(request):
-    """
-    Returns:
-        string: error
-        int: code
-        object: value
-    """
     if(not request.data):
-        return (api_errors['no_req'], 400, None)
+        error = api_errors['request']
+        error['details'] = 'No request content'
+        raise ValueError(error)
     if(not request.is_json):
-        return (api_errors['no_json'], 400, None)
+        error = api_errors['request']
+        error['details'] = 'Request content not in JSON format'
+        raise ValueError(error)
     try:
         value = jsonpickle.decode(request.data)
     except ValueError as e:
-        return (api_errors['no_json_valid'] + ': ' + str(e), 400, None)
-    return (None, None, value)
+        error = api_errors['request']
+        error['details'] = 'Request format not in valid JSON'
+        raise ValueError(error)
+    return value
 
 
 def check_schema(model, file_schema):
-    """
-    Returns:
-        string: error
-        int: code
-    """
-    schema = json.load(open(file_schema))
+    try:
+        with open(file_schema) as schema:
+            schema = json.load(schema)
+    except FileNotFoundError as e:
+        error = api_errors['notfound']
+        error['details'] = f'{e.filename} - {e.strerror}'
+        raise ValueError(error)
     try:
         validate(instance=model, schema=schema)
-    except Exception as e:
-        return (e, 400)
-    return (None, None)
+    except jsonschema.exceptions.ValidationError as e:
+        error = api_errors['validation']
+        error['details'] = f'{e.message}'
+        raise ValueError(error)
+    except ValueError as e:
+        error = api_errors['generic']
+        raise ValueError(error)
