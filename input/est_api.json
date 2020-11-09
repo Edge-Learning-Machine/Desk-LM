@@ -1,6 +1,6 @@
 {
     "estimator": "LinearSVC",
-    "C_exp_upperlimit": 2,
     "C_exp_lowerlimit": -7,
+    "C_exp_upperlimit": 2,
     "C_exp_step": 2
 }

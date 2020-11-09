@@ -16,7 +16,7 @@ def put_model_route(request, database, id, app):
     # verifico che la richiesta sia presente e in formato JSON valido
     try:
         content = check_json(request)
-    except Exception as error:
+    except ValueError as error:
         return bad(error)
 
     # recupero il documento dal database

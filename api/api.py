@@ -45,4 +45,4 @@ from server import server
 app = server(database)
 
 if __name__ == "__main__":
-    app.run(debug=True, host=host, port=port, ssl_context=('api/resources/cert.pem', 'api/resources/key.pem'))
+    app.run(debug=False, host=host, port=port, ssl_context=('api/resources/cert.pem', 'api/resources/key.pem'))

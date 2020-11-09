@@ -30,6 +30,11 @@ def server(database):
         from routes.post_model_trainingset_route import post_model_trainingset_route
         return post_model_trainingset_route(request, database, id)
 
+    @app.route('/model/<id>/measurify', methods=['POST'])
+    def post_model_measurify(id):
+        from routes.post_model_measurify_route import post_model_measurify_route
+        return post_model_measurify_route(request, database, id)
+
     @app.route('/model/<id>', methods=['PUT'])
     def put_model(id):
         from routes.put_model_route import put_model_route
