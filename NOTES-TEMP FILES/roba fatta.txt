@@ -1,0 +1,6 @@
+- prodotto:  /schemas/rfSchemas.json     Json della random forest (doc https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
+
+- modificato: /config/Estimator.py       aggiunte da riga 45 a 47
+
+- prodotto:   /config/RandomForest.py
+

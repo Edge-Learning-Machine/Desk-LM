@@ -1,0 +1,70 @@
+----- Main.py   (poiché tutti i parametri sono presi dalle varie classi, non è necessario modificarlo)
+
+-parse della stringa di input
+-generazione degli oggetti relativi alle classi Estimator, Dataset ecc
+-cross validation
+-scelta del miglior modello
+-display metriche di sklearn
+-store&output usando la classe OutputMgr
+
+* Dovrai fare un estimator random forest, con parametri simili a decision tree (però serviranno per la creazione di più alberi per ogni modello) e in più la creazione di più alberi per ogni modello (mentre in DT il modello è un unico albero) w le modalità del voting.
+
+----- Dataset.py (essendo completamente slegato dal tipo di modello da utilizzare, non deve essere modificato)
+
+-parse del Json di riferimento e generazione del dataset "interno" in base ai valori passati
+
+
+----- DecisionTree.py  (deve essere realizzato un file simile a questo relativo alla RF con tutti i parametri che possono essere gestiti)
+
+-descrizione del modello Json del decision tree con tutti i parametri che possono essere decisi
+-validazione del json di input
+-generazione dell'albero con i parametri di ingresso
+
+* Probabilmente alcune funzioni di questo file dovrai utilizzarle per il random forest
+
+----- Estimator.py (dovrebbe essere necessario solamente aggiungere una condizione allo switch-case per rendere disponibile la RF)
+-descrizione del modello dello stimatore
+-validazione del Json
+-switch-case per richiamare la giusta classe dello stimatore
+-assegnazione di tutti i parametri
+
+* Sì, nuovo stimatore random forest
+
+----- ModelSelection.py (non contiene parti specifiche per il modello usato, da non modificare)
+
+-validazione dello schema json
+-gestione delle metriche di test
+-assegnamento valori
+
+* Servirà uno schema specifico per RF
+
+----- Output.py (non contiene parti specifiche per il modello usato, da non modificare)
+
+-definizione del Json
+-validazione del Json di input
+-assegnamento dei parametri di output letti dal Json
+
+----- Predict.py (non contiene parti specifiche per il modello usato, da non modificare)
+
+-definizione del Json
+-validazione del Json di input
+-assegnamento dei parametri di output letti dal Json
+
+
+----- Preprocess.py (non contiene parti specifiche per il modello usato, da non modificare)
+
+-definizione del Json
+-validazione del Json di input
+-assegnamento dei parametri di output letti dal Json
+
+
+----- OutputMgr.py (non contiene parti specifiche per il modello usato, da non modificare)
+
+-gestione degli output, dei path e di tutto ciò che non è legato al modello usato
+
+* Servirà una sottoclasse specifica per fare l'output del RF, come fatto per gli altri stimatori
+
+----- DecisionTree_OM.py (il file che salva i valori di interesse nel file, deve essere realizzata una versione per la RF)
+ 
+
+

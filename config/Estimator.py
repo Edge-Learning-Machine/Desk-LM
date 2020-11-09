@@ -42,6 +42,9 @@ class Estimator(object):
                 elif jsonData['estimator'].startswith('DecisionTree'):                
                     import DecisionTree
                     esti = DecisionTree.DecisionTree(jsonData)
+				elif jsonData['estimator'].startswith('RandomForest'):                
+                    import RandomForest
+                    esti = RandomForest.RandomForest(jsonData)
                 elif jsonData['estimator']=='LinearSVC' or jsonData['estimator']=='LinearSVR':                
                     import SVM
                     esti = SVM.SVM(jsonData)

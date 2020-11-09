@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "properties": {
+        "estimator": {"type": "string"},
+		"n_estimators": {"type": "number"},
+		"max_depth": {"type": "number"},
+		"min_samples_split": {"type": "number"},
+		"min_samples_leaf": {"type" : "number"},
+		"min_weight_fraction_leaf": {"type": "number"},
+		"max_features": {"type": "string"},
+		"max_leaf_nodes": {"type": "number"},
+		"min_impurity_decrease": {"type": "number"},
+		"n_jobs": {"type": "number"}
+        
+    },
+    "required": ["estimator"],
+    "additionalProperties": false
+}
