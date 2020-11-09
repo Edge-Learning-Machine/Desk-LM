@@ -5,7 +5,7 @@ import json
 
 def run():
     # Import enviromental variables
-    load_dotenv(dotenv_path='src/variables.env')
+    load_dotenv(dotenv_path='api/variables.env')
     
     # Init database
     from database import Database
@@ -13,7 +13,7 @@ def run():
 
     # Create default access
     error, results = database.find(os.getenv('CLIENTS_COLLECTION'),'')
-    if len(list(results)) == 0:
+    if results and len(list(results)) == 0:
         default_client = json.load(open(os.getenv('DEFAULT_TOKEN')))
         error = database.insert_one(os.getenv('CLIENTS_COLLECTION'), default_client)
         if error:

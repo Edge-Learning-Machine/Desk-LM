@@ -26,7 +26,7 @@ def server(database):
     def put_model(id):
         return put_model_route(request, database, id, app)
 
-    @app.route('/model/<id>/download', methods=['GET'])
+    @app.route('/model/<id>/output', methods=['GET'])
     def get_model_download(id):
         return get_model_download_route(request, database, id)
 
@@ -38,7 +38,7 @@ def server(database):
     def notfound(error):
         return answer('Route not found', 404)
 
-    app.run(debug=False, host=host, port=port, ssl_context=('src/resources/cert.pem', 'src/resources/key.pem'))
+    app.run(debug=False, host=host, port=port, ssl_context=('api/resources/cert.pem', 'api/resources/key.pem'))
 
 # import time
 # import markdown
