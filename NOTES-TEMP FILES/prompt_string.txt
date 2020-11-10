@@ -1,0 +1,3 @@
+cd C:\Github Repo\Desk-LM
+
+python main.py -d input/ds_heart.json -e input/est_rf_c.json -p input/pp_1.json -s input/ms_2.json -o input/output_mine.json --store

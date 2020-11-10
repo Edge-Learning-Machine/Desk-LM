@@ -10,7 +10,8 @@
 		"max_features": {"type": "string"},
 		"max_leaf_nodes": {"type": "number"},
 		"min_impurity_decrease": {"type": "number"},
-		"n_jobs": {"type": "number"}
+		"n_jobs": {"type": "number"},
+		"verbose": {"type": "number"}
         
     },
     "required": ["estimator"],

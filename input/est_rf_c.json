@@ -1,0 +1,4 @@
+{
+    "estimator": "RandomForestClassifier",
+	"n_estimators": 10
+}
