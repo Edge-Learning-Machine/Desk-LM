@@ -191,6 +191,10 @@ def buildJson (est,depth):
 
 if __name__ == '__main__':
 
+	maxTrees = 21
+	maxDepth = 51
+	maxIter = 10
+	
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-d', '--dataset')
 	parser.add_argument('-p', '--preprocess')
@@ -202,30 +206,31 @@ if __name__ == '__main__':
 	args = parser.parse_args()
     
 	st = open("statsFile.txt", "w")
-	st.write('#trees \t| Max_Depth\t| rate\t\t\t\t\t\t\t| H_Dim\t| C_Dim\t\n\n')
+	st.write('#trees \t| Max_Depth\t| #Iteration\t| rate\t\t\t\t\t\t\t| H_Dim\t| C_Dim\t\n\n')
 	st.close()
 	
 	print(f'Bruteforce to get stats about number of estimators and max depth')
-	for x in range(2,21):
-		for y in range(0,51):
+	for x in range(2,maxTrees):
+		for y in range(0,maxDepth):
 			buildJson(x,y)
+			for z in range(0,maxIter):
 			
-			print(f'Current: number {x}, depth {y}')
-			st = open("statsFile.txt", "a")
-			st.write(f'{x} \t| {y}\t\t| ')
-			st.close()
-			
-			try:
-				elm = ELM(args)
-				elm.process()
-				
+				print(f'Current: number {x}/{maxTrees}, depth {y}/{maxDepth}, iteration {z}/{maxIter}')
 				st = open("statsFile.txt", "a")
-				
-				from pathlib import Path
-				hdim = Path('C:\\Github Repo\\Desk-LM\\output_test\\dlm\\include\\RF_Params.h').stat().st_size
-				cdim = Path('C:\\Github Repo\\Desk-LM\\output_test\\dlm\\source\\RF_Params.c').stat().st_size
-				
-				st.write(f'\t| {hdim}\t| {cdim} \n')
+				st.write(f'{x} \t| {y}\t\t| {z}\t\t| ')
 				st.close()
-			except ValueError as error:
-				print(error)
+			
+				try:
+					elm = ELM(args)
+					elm.process()
+				
+					st = open("statsFile.txt", "a")
+				
+					from pathlib import Path
+					hdim = Path('C:\\Github Repo\\Desk-LM\\output_test\\dlm\\include\\RF_Params.h').stat().st_size
+					cdim = Path('C:\\Github Repo\\Desk-LM\\output_test\\dlm\\source\\RF_Params.c').stat().st_size
+				
+					st.write(f'\t| {hdim}\t| {cdim} \n')
+					st.close()
+				except ValueError as error:
+					print(error)
