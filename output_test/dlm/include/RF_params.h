@@ -7,7 +7,7 @@
 
 /// VARIABLES FOR TREE NUMBER 0 
 
-#define N_NODES_t0 93
+#define N_NODES_t0 91
 
 #define VALUES_DIM_t0 2
 
@@ -20,7 +20,7 @@ extern int values_t0[N_NODES_t0][VALUES_DIM_t0];
 
 /// VARIABLES FOR TREE NUMBER 1 
 
-#define N_NODES_t1 95
+#define N_NODES_t1 91
 
 #define VALUES_DIM_t1 2
 
@@ -33,7 +33,7 @@ extern int values_t1[N_NODES_t1][VALUES_DIM_t1];
 
 /// VARIABLES FOR TREE NUMBER 2 
 
-#define N_NODES_t2 95
+#define N_NODES_t2 101
 
 #define VALUES_DIM_t2 2
 
@@ -59,7 +59,7 @@ extern int values_t3[N_NODES_t3][VALUES_DIM_t3];
 
 /// VARIABLES FOR TREE NUMBER 4 
 
-#define N_NODES_t4 89
+#define N_NODES_t4 85
 
 #define VALUES_DIM_t4 2
 
@@ -72,7 +72,7 @@ extern int values_t4[N_NODES_t4][VALUES_DIM_t4];
 
 /// VARIABLES FOR TREE NUMBER 5 
 
-#define N_NODES_t5 99
+#define N_NODES_t5 91
 
 #define VALUES_DIM_t5 2
 
@@ -85,7 +85,7 @@ extern int values_t5[N_NODES_t5][VALUES_DIM_t5];
 
 /// VARIABLES FOR TREE NUMBER 6 
 
-#define N_NODES_t6 89
+#define N_NODES_t6 95
 
 #define VALUES_DIM_t6 2
 
@@ -111,7 +111,7 @@ extern int values_t7[N_NODES_t7][VALUES_DIM_t7];
 
 /// VARIABLES FOR TREE NUMBER 8 
 
-#define N_NODES_t8 95
+#define N_NODES_t8 93
 
 #define VALUES_DIM_t8 2
 
@@ -124,7 +124,7 @@ extern int values_t8[N_NODES_t8][VALUES_DIM_t8];
 
 /// VARIABLES FOR TREE NUMBER 9 
 
-#define N_NODES_t9 83
+#define N_NODES_t9 89
 
 #define VALUES_DIM_t9 2
 

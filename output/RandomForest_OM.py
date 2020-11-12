@@ -4,12 +4,12 @@ import numpy as np
 
 def unrollPointers(name, lenght):
 		if lenght == 1:
-			stri = "{" + f" &{name}_t1" + "}"
+			stri = "{" + f"  {name}_t1" + "}"
 		else:
 			stri = "{ "
 			for i in range(lenght-1):
-				stri = stri + f"&{name}_t{i} ,"
-			stri = stri + f"&{name}_t{lenght-1}"
+				stri = stri + f" {name}_t{i} ,"
+			stri = stri + f" {name}_t{lenght-1}"
 			stri = stri + "};"
 		return stri
 
