@@ -1,0 +1,5 @@
+{
+    "estimator": "RandomForestClassifier",
+	"n_estimators": 20 ,
+	"max_depth": 50 
+}

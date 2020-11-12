@@ -1,5 +1,5 @@
 #include "PPParams.h"
-float pca_components[N_FEATURE][N_ORIG_FEATURE] = { { 0.056602107986459635, -0.9983968155856111 } };
+float pca_components[N_FEATURE][N_ORIG_FEATURE] = { { 0.03925210911896256, -0.9992293390056726 } };
 
 #define MINMAX_SCALING
 

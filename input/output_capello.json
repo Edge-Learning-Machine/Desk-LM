@@ -1,5 +1,5 @@
 {
     "export_path": "C:\\Github Repo\\Desk-LM\\output_test",
-    "is_dataset_test": false,
+    "is_dataset_test": true,
     "training_set_cap": 86
 }
