@@ -1,0 +1,52 @@
+{
+    "type": "object",
+    "properties": {
+        "mode": { "enum": ["evaluate", "predict", "measurify"] },
+        "samples": { 
+            "type": "array",
+            "items": {
+                "oneOf": [
+                    { "type": "array" },
+                    { "type": "number" }
+                ]
+            }
+        },
+        "n_preds": { "type": "number" },
+        "url": { "type": "string" },
+        "feature": { "type": "string" },
+        "items": { 
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "filter": { "type": "string" },
+        "target": { "type": "string" },
+        "webhook": { "type": "string" }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": { "mode" : { "const": "evaluate" } }
+            },
+            "then": {
+                "required": ["mode"]
+            }
+        },
+        {
+            "if": {
+                "properties": { "mode" : { "const": "predict" } }
+            },
+            "then": {
+                "required": ["mode", "samples"]
+            }
+        },
+        {
+            "if": {
+                "properties": { "mode" : { "const": "measurify" } }
+            },
+            "then": {
+                "required": ["mode", "url", "feature", "items", "filter", "target"]
+            }
+        }
+    ],
+    "additionalProperties": false
+}

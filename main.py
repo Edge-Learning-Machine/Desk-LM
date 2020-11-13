@@ -6,6 +6,7 @@ import sys
 import sklearn as skl
 import logger as lg
 import error as error
+import uuid
 
 
 class ELM(object):
@@ -33,36 +34,33 @@ class ELM(object):
             try:
                 self.predict = pred.Predict(self.args.predict)
             except ValueError as err:
-                # return err
                 raise ValueError(err)
-            # return 0
         else:
             import Dataset as cds
             try:
-                self.dataset = cds.Dataset(self.args.dataset)
+                if isinstance(self.args.dataset, str):
+                    self.dataset = cds.Dataset(self.args.dataset)
+                else:
+                    self.dataset = cds.Dataset(self.args.dataset, self.args.columns, self.args.target)
             except ValueError as err:
-                # return err
                 raise ValueError(err)
 
             import Estimator as ce
             try:
                 self.estimator = ce.Estimator.create(self.args.estimator, self.dataset)
             except ValueError as err:
-                # return err
                 raise ValueError(err)
 
             import Preprocess as pp
             try:
                 self.preprocess = pp.Preprocess(self.args.preprocess)
             except ValueError as err:
-                # return err
                 raise ValueError(err)
 
             import ModelSelection as ms
             try:
                 self.modelselection = ms.ModelSelection(self.args.selection, self.estimator)
             except ValueError as err:
-                # return err
                 raise ValueError(err)
 
             if self.args.output != None:
@@ -70,13 +68,11 @@ class ELM(object):
                 try:
                     self.output = Output.Output(self.args.output)
                 except ValueError as err:
-                    # return err
                     raise ValueError(err)
                 if self.estimator.nick=='knn':
                     self.training_set_cap = self.output.training_set_cap
-            # return 0
 
-    def process(self, model_id=None):
+    def process(self, **kargs):
         if self.predict != None:
             m = jl.load(os.path.join('storage/', self.predict.model_id + '.pkl'))
             from TripleES import TripleES
@@ -121,9 +117,7 @@ class ELM(object):
                 #Add/change directly above if you want a different metrics (e.g., r2_score)
 
             if self.args.store == True:
-                if not model_id:
-                    import uuid
-                    model_id = str(uuid.uuid4())
+                model_id = kargs['model_id'] if 'model_id' in kargs  else str(uuid.uuid4())
                 jl.dump(best_estimator, './storage/' + model_id + '.pkl', compress = 3)
                 print(f'Stored model: {model_id}')
 

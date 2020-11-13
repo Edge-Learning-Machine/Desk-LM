@@ -10,7 +10,7 @@ from jsonschema import validate
 sys.path.append('./')
 from main import ELM
 
-def elm_manager(mode, database, id, model, app, content, webhook=None):
+def elm_manager(app, content, database, doc, mode, **kargs):
     # configurazione args per elm
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--dataset')
@@ -34,32 +34,33 @@ def elm_manager(mode, database, id, model, app, content, webhook=None):
         app.logger.info("Start training")
 
         # configurazione e creazione dei file json
-        for element in model:
+        for element in doc['model']:
             with open(f'{os.getenv("INPUT_PATH")}{element}_api.json','w') as file:
-                json.dump(model[element], file, indent=4)
+                json.dump(doc['model'][element], file, indent=4)
 
         # elm start
         try:
             elm = ELM(args)
-            elm.process(id)
+            elm.process(model_id=doc['_id'])
         except ValueError as error:
             app.logger.error(error)
             # aggiorno il database
             try:
-                database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':{'status.error':str(err)}})
+                database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status.error':str(error)}})
             except ValueError as error:
                 app.logger.error(error)
             return
         
         # creazione zip output
-        with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + id + '.zip', 'w') as f:
+        with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + doc['_id'] + '.zip', 'w') as f:
             for root, dirs, files in os.walk(os.getenv('OUTPUT_PATH')):
                 for file in files:
                     f.write(os.path.join(root, file))
 
         # aggiorno il database
+        
         try:
-            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':{'status':model_status[4]}})
+            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status':model_status[3]}})
         except ValueError as error:
             app.logger.error(error)
             return
@@ -67,10 +68,10 @@ def elm_manager(mode, database, id, model, app, content, webhook=None):
         app.logger.info("Done training")
 
         # send webhook
-        if webhook:
-            app.logger.info(f'Sending status to: {webhook}')
+        if 'webhook' in kargs:
+            app.logger.info(f'Sending webhook to: {kargs["webhook"]}')
             try:
-                requests.get(webhook)
+                requests.get(kargs['webhook'])
             except:
                 app.logger.error("Webhook not send")
 
@@ -94,3 +95,58 @@ def elm_manager(mode, database, id, model, app, content, webhook=None):
 
         app.logger.info("Done predict")
         return predict
+
+    elif (mode=='measurify'):
+        # configurazione args per elm in modalità 'evaluate'
+        args.dataset = kargs['dataset']
+        args.columns = kargs['columns']
+        args.target = kargs['target']
+        args.preprocess = f'{os.getenv("INPUT_PATH")}pp_api.json'
+        args.estimator = f'{os.getenv("INPUT_PATH")}est_api.json'
+        args.selection = f'{os.getenv("INPUT_PATH")}ms_api.json'
+        args.output = f'{os.getenv("INPUT_PATH")}output_api.json'
+        args.store = True
+
+        app.logger.info("Start training")
+
+        # configurazione e creazione dei file json
+        for element in doc['model']:
+            with open(f'{os.getenv("INPUT_PATH")}{element}_api.json','w') as file:
+                json.dump(doc['model'][element], file, indent=4)
+
+        # elm start
+        try:
+            elm = ELM(args)
+            elm.process(model_id=doc['_id'])
+        except ValueError as error:
+            app.logger.error(error)
+            # aggiorno il database
+            try:
+                database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status.error':str(error)}})
+            except ValueError as error:
+                app.logger.error(error)
+            return
+
+        # creazione zip output
+        with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + doc['_id'] + '.zip', 'w') as f:
+            for root, dirs, files in os.walk(os.getenv('OUTPUT_PATH')):
+                for file in files:
+                    f.write(os.path.join(root, file))
+
+        # aggiorno il database
+        try:
+            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status':model_status[3]}})
+        except ValueError as error:
+            app.logger.error(error)
+            return
+
+        app.logger.info("Done training")
+
+
+        # send webhook
+        if 'webhook' in kargs:
+            app.logger.info(f'Sending webhook to: {kargs["webhook"]}')
+            try:
+                requests.get(kargs['webhook'])
+            except:
+                app.logger.error("Webhook not send")

@@ -11,7 +11,7 @@ host = os.getenv('SERVER_HOST')
 port = os.getenv('SERVER_PORT')
 
 # Init database
-from database import Database
+from commons.database import Database
 database = Database(os.getenv('DATABASE_NAME'))
 
 # Create default access

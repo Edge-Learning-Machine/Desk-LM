@@ -1,9 +1,5 @@
 {
     "scale": [
-        "StandardScaler",
-        "MinMaxScaler"
-    ],
-    "pca_values": [
-        2
+        "StandardScaler"
     ]
 }

@@ -21,7 +21,7 @@ def post_model_route(request, database):
 
     # verifico parametri modello
     try:
-        check_schema(content, f'{os.getenv("SCHEMAS_PATH")}apiModelSchema.json')
+        check_schema(content, f'{os.getenv("SCHEMAS_PATH")}postModelSchema.json')
     except ValueError as error:
         return bad(error)
 
@@ -31,12 +31,6 @@ def post_model_route(request, database):
         except ValueError as error:
             return bad(error)
 
-    # verifico che il name non sia giè stato usato
-    if(database.exist(os.getenv('MODELS_COLLECTION'),{'name':content['name']})):
-        error = api_errors['request']
-        error['details'] = f'The name is already been used ({content["name"]})'
-        return bad(error)
-
     # creazione nuovo modello
     new_model = {}
     new_model['model'] = content
@@ -44,17 +38,17 @@ def post_model_route(request, database):
     # aggiungo valori in risposta
     new_model['_id'] = str(uuid.uuid4())
     new_model['status'] = model_status[0]
-    # new_model['output'] = f'{os.getenv("ZIP_PATH")}{new_model["_id"]}.zip'
     new_model['timestamp'] = str(datetime.now())
 
-    # sposto 'name' fuori dal model
-    new_model['name'] = new_model['model']['name']
-    del new_model['model']['name']
-
-    # sposto 'webhook' fuori dal model
-    if 'webhook' in content:
-        new_model['webhook'] = new_model['model']['webhook']
-        del new_model['model']['webhook']
+    if 'name' in content:
+         # verifico che il name non sia giè stato usato
+        if(database.exist(os.getenv('MODELS_COLLECTION'),{'name':content['name']})):
+            error = api_errors['request']
+            error['details'] = f'The name is already been used ({content["name"]})'
+            return bad(error)
+        # sposto 'name' fuori dal model
+        new_model['name'] = new_model['model']['name']
+        del new_model['model']['name']
 
     # inserisco nel database
     try:

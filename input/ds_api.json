@@ -1,19 +1,9 @@
 {
-    "path": "datasets/9533b5ce-4f31-4938-b6a8-409c2a3e8b9c.csv",
-    "select_columns": [
+    "path": "datasets/b43bab9c-fd19-427c-92a8-8b2c392397f0.csv",
+    "target_column": "target",
+    "test_size": 0.2,
+    "skip_columns": [
         "age",
-        "sex",
-        "cp",
-        "trestbps",
-        "chol",
-        "fbs",
-        "restecg",
-        "thalach",
-        "exang",
-        "oldpeak",
-        "slope",
-        "ca",
-        "thal"
-    ],
-    "target_column": "target"
+        "sex"
+    ]
 }

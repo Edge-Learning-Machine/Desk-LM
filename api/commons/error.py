@@ -23,5 +23,6 @@ api_errors = {
     'request': { 'status': 400, 'type': 'Request error'},
     'notfound': { 'status': 400, 'type': 'Not found error'},
     'validation': { 'status': 400, 'type': 'Validation error'},
-    'invalid': { 'status': 400, 'type': 'Invalid model error'}
+    'invalid': { 'status': 400, 'type': 'Invalid model error'},
+    'measurify': { 'status': 400, 'type': 'Measurify error' }
 }

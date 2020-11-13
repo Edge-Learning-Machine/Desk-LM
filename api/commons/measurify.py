@@ -5,8 +5,8 @@ from commons.checker import *
 from commons.response import *
 import requests
 
-def postLogin():
-    url = f'{os.getenv("MEASURIFY_URL")}/login'
+def postLogin(url):
+    url = f'{url}/login'
     body = {
         'username': 'admin',
         'password': 'admin'
@@ -14,11 +14,16 @@ def postLogin():
     response = requests.post(url, json=body, verify=False)
     return json.loads(response.content)['token']
 
-def getResources(resource, params, headers, stream=False):
-    url = f'{os.getenv("MEASURIFY_URL")}/{resource}'
+def getResources(url, resource, params, headers, stream=False):
+    url = f'{url}/{resource}'
     response = requests.get(url, params=params, headers=headers, stream=stream, verify=False)
     return json.loads(response.content)
 
-def getResource(resource, id, params, headers, stream=False):
+def getResource(url, resource, id, params, headers, stream=False):
     route = f'{resource}/{id}'
-    return getResources(route, params, headers, stream)
+    return getResources(url, route, params, headers, stream)
+
+def putResource(url, resource, id, headers, body):
+    url = f'{url}/{resource}/{id}'
+    response = requests.put(url, headers=headers, json=body, verify=False)
+    return json.loads(response.content)

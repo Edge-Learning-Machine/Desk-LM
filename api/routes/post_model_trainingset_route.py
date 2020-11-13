@@ -31,6 +31,7 @@ def post_model_trainingset_route(request, database, id):
     value['model']['ds']['path'] = file_path
     for item in request.form:
         value['model']['ds'][item] = json.loads(request.form[item])
+    value['status'] = model_status[1]
 
     # controllo parametri del ds
     try:
@@ -45,16 +46,11 @@ def post_model_trainingset_route(request, database, id):
         error = api_errors['generic']
         error['details'] = str(e)
         return bad(error)
-
-    # aggiorno lo stato 
-    value['status'] = model_status[1]
     
-    # aggiorno il database
+    # aggiorno il database con il ds e il nuovo stato
     try:
         database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':value})
     except ValueError as e:
         return bad(error)
-
-    del value['model']
 
     return answer(value)
