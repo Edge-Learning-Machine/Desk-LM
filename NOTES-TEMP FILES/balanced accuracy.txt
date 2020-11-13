@@ -9,3 +9,19 @@ Sklearn version
 {'esti__max_depth': None, 'esti__max_features': 'auto', 'esti__max_leaf_nodes': None, 'esti__min_impurity_decrease': 0.0, 'esti__min_samples_leaf': 1, 'esti__min_samples_split': 2, 'esti__min_weight_fraction_leaf': 0.0, 'esti__n_estimators': 10, 'esti__n_jobs': None, 'esti__verbose': 0, 'reduce_dims__n_components': 1, 'scale': MinMaxScaler()}
 balanced_accuracy_score in testing set: 0.7386363636363636
 The end
+
+
+
+DT
+
+
+Python version
+3.6.10 (default, Mar  5 2020, 10:17:47) [MSC v.1900 64 bit (AMD64)]
+Numpy version
+1.18.5
+Sklearn version
+0.23.1
+0.6426547515257193
+{'esti__max_depth': 10, 'esti__max_leaf_nodes': 50, 'esti__min_samples_leaf': 1, 'esti__min_samples_split': 3, 'reduce_dims__n_components': 1, 'scale': MinMaxScaler()}
+balanced_accuracy_score in testing set: 0.6869747899159664
+The end

@@ -69,12 +69,13 @@ class RandomForest_OM(OutputMgr):
 			myFile.write(f"\n\n")
 		
 		myFile.write(f"/// Arrays for the whole forest to make it easier to use \n\n")
-		myFile.write(f"extern int* forest_nodes[FOREST_DIM];\n")
+		myFile.write(f"extern int target_classes[N_CLASS];\n")
+		myFile.write(f"extern int forest_nodes[FOREST_DIM];\n")
 		myFile.write(f"extern int* forest_children_left[FOREST_DIM];\n")
 		myFile.write(f"extern int* forest_children_right[FOREST_DIM];\n")
 		myFile.write(f"extern int* forest_feature[FOREST_DIM];\n")
 		myFile.write(f"extern float* forest_threshold[FOREST_DIM];\n")
-		myFile.write(f"extern int** forest_values[FOREST_DIM];\n")
+		myFile.write(f"extern int* forest_values[FOREST_DIM];\n")
 			
 		myFile.write(f"\n#endif")
 		myFile.close()
@@ -119,22 +120,22 @@ class RandomForest_OM(OutputMgr):
 			
 		
 		stri = unrollForest("N_NODES", len(rf))
-		myFile.write(f"int* forest_nodes= {stri}\n")
+		myFile.write(f"int forest_nodes[FOREST_DIM]= {stri}\n")
 		
 		stri = unrollForest("children_left", len(rf))
-		myFile.write(f"int* forest_children_left= {stri}\n")
+		myFile.write(f"int* forest_children_left[FOREST_DIM]= {stri}\n")
 		
 		stri = unrollForest("children_right", len(rf))
-		myFile.write(f"int* forest_children_right = {stri}\n")
+		myFile.write(f"int* forest_children_right[FOREST_DIM] = {stri}\n")
 		
 		stri = unrollForest("feature", len(rf))
-		myFile.write(f"int* forest_feature = {stri}\n")
+		myFile.write(f"int* forest_feature[FOREST_DIM] = {stri}\n")
 		
 		stri = unrollForest("threshold", len(rf))
-		myFile.write(f"float* forest_threshold = {stri}\n")
+		myFile.write(f"float* forest_threshold[FOREST_DIM] = {stri}\n")
 		
 		stri = unrollPointers("values", len(rf))
-		myFile.write(f"forest_values = {stri}\n")
+		myFile.write(f"int* forest_values[FOREST_DIM] = {stri}\n")
 		
 		myFile.close()
 		
