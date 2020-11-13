@@ -2,7 +2,7 @@ import abc
 from OutputMgr import OutputMgr
 import numpy as np
 
-def unrollPointers(name, lenght):
+def unrollForest(name, lenght):
 		if lenght == 1:
 			stri = "{" + f"  {name}_t1" + "}"
 		else:
@@ -10,6 +10,18 @@ def unrollPointers(name, lenght):
 			for i in range(lenght-1):
 				stri = stri + f" {name}_t{i} ,"
 			stri = stri + f" {name}_t{lenght-1}"
+			stri = stri + "};"
+		return stri
+		
+		
+def unrollPointers(name, lenght):
+		if lenght == 1:
+			stri = "{" + f"  &{name}_t1[0][0]" + "}"
+		else:
+			stri = "{ "
+			for i in range(lenght-1):
+				stri = stri + f" &{name}_t{i}[0][0] ,"
+			stri = stri + f" &{name}_t{lenght-1}[0][0]"
 			stri = stri + "};"
 		return stri
 
@@ -57,6 +69,7 @@ class RandomForest_OM(OutputMgr):
 			myFile.write(f"\n\n")
 		
 		myFile.write(f"/// Arrays for the whole forest to make it easier to use \n\n")
+		myFile.write(f"extern int* forest_nodes[FOREST_DIM];\n")
 		myFile.write(f"extern int* forest_children_left[FOREST_DIM];\n")
 		myFile.write(f"extern int* forest_children_right[FOREST_DIM];\n")
 		myFile.write(f"extern int* forest_feature[FOREST_DIM];\n")
@@ -104,19 +117,21 @@ class RandomForest_OM(OutputMgr):
 			stri = create_matrices.createArray("int", "target_classes", target_classes, 'N_CLASS')
 			myFile.write(stri)
 			
-			
 		
-		stri = unrollPointers("children_left", len(rf))
-		myFile.write(f"forest_children_left= {stri}\n")
+		stri = unrollForest("N_NODES", len(rf))
+		myFile.write(f"int* forest_nodes= {stri}\n")
 		
-		stri = unrollPointers("children_right", len(rf))
-		myFile.write(f"forest_children_right = {stri}\n")
+		stri = unrollForest("children_left", len(rf))
+		myFile.write(f"int* forest_children_left= {stri}\n")
 		
-		stri = unrollPointers("feature", len(rf))
-		myFile.write(f"forest_feature = {stri}\n")
+		stri = unrollForest("children_right", len(rf))
+		myFile.write(f"int* forest_children_right = {stri}\n")
 		
-		stri = unrollPointers("threshold", len(rf))
-		myFile.write(f"forest_threshold = {stri}\n")
+		stri = unrollForest("feature", len(rf))
+		myFile.write(f"int* forest_feature = {stri}\n")
+		
+		stri = unrollForest("threshold", len(rf))
+		myFile.write(f"float* forest_threshold = {stri}\n")
 		
 		stri = unrollPointers("values", len(rf))
 		myFile.write(f"forest_values = {stri}\n")
