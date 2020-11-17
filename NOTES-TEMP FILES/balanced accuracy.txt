@@ -1,27 +1,11 @@
-(DeskLM) C:\Github Repo\Desk-LM>python main.py -d input/ds_heart.json -e input/est_rf_c.json -p input/pp_1.json -s input/ms_2.json -o input/output_capello.json
+(DeskLM) C:\Github Repo\Desk-LM>python main.py -d input/ds_heart.json -e input/est_dt_c.json -p input/pp_1.json -s input/ms_2_acc.json -o input/output_capello.json
 Python version
 3.6.10 (default, Mar  5 2020, 10:17:47) [MSC v.1900 64 bit (AMD64)]
 Numpy version
 1.18.5
 Sklearn version
 0.23.1
-0.5716545036964558
-{'esti__max_depth': None, 'esti__max_features': 'auto', 'esti__max_leaf_nodes': None, 'esti__min_impurity_decrease': 0.0, 'esti__min_samples_leaf': 1, 'esti__min_samples_split': 2, 'esti__min_weight_fraction_leaf': 0.0, 'esti__n_estimators': 10, 'esti__n_jobs': None, 'esti__verbose': 0, 'reduce_dims__n_components': 1, 'scale': MinMaxScaler()}
-balanced_accuracy_score in testing set: 0.7386363636363636
-The end
-
-
-
-DT
-
-
-Python version
-3.6.10 (default, Mar  5 2020, 10:17:47) [MSC v.1900 64 bit (AMD64)]
-Numpy version
-1.18.5
-Sklearn version
-0.23.1
-0.6426547515257193
-{'esti__max_depth': 10, 'esti__max_leaf_nodes': 50, 'esti__min_samples_leaf': 1, 'esti__min_samples_split': 3, 'reduce_dims__n_components': 1, 'scale': MinMaxScaler()}
-balanced_accuracy_score in testing set: 0.6869747899159664
+0.6286764705882353
+{'esti__max_depth': 12, 'esti__max_leaf_nodes': 50, 'esti__min_samples_leaf': 1, 'esti__min_samples_split': 2, 'reduce_dims__n_components': 1, 'scale': MinMaxScaler()}
+accuracy_score in testing set: 0.5161290322580645
 The end
