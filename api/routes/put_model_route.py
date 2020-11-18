@@ -50,7 +50,7 @@ def put_model_route(request, database, id, app):
             return bad(error)
 
         # webhook
-        webhook = doc['webhook'] if 'webhook' in doc else None
+        webhook = content['webhook'] if 'webhook' in content else None
 
         # avvio elm addestramento in parallelo (thread)
         from elm_manager import elm_manager
@@ -115,14 +115,14 @@ def put_model_route(request, database, id, app):
 
             while True:
                 response = getResources(content['url'], 'measurements', params, headers, True)
-                for documento in response['docs']:
-                    for sample in documento['samples']:
+                for document in response['docs']:
+                    for sample in document['samples']:
                         for i, v in enumerate(sample['values']):
                             ds[res['items'][i]['name']].append(v)
                 if not response['nextPage']: break 
                 params['page'] += 1
 
-            dataset = pd.DataFrame(ds)
+            dataset = pd.DataFrame(ds, columns=columns)
         except Exception as e:
             error = api_errors['measurify']
             error['details'] = str(e)
@@ -135,12 +135,15 @@ def put_model_route(request, database, id, app):
         except ValueError as error:
             return bad(error)
 
+        # webhook
+        webhook = content['webhook'] if 'webhook' in content else None
+    
         # avviare elm con dataset in parallelo (thread)
         from elm_manager import elm_manager
         elm_thread_measurify = threading.Thread(
             target=elm_manager, 
             args=(app, content, database, doc, 'measurify', ),
-            kwargs={'dataset':dataset, 'columns':columns, 'target':content['target']})
+            kwargs={'dataset':dataset, 'columns':columns, 'target':content['target'], 'webhook':webhook, 'headers':headers})
         elm_thread_measurify.start()
 
         return answer(doc)

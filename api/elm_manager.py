@@ -22,7 +22,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
     parser.add_argument('--store', action="store_true")
     args = parser.parse_args()
 
-    if(mode=='evaluate'):
+    if mode=='evaluate':
         # configurazione args per elm in modalità 'evaluate'
         args.dataset = f'{os.getenv("INPUT_PATH")}ds_api.json'
         args.preprocess = f'{os.getenv("INPUT_PATH")}pp_api.json'
@@ -58,7 +58,6 @@ def elm_manager(app, content, database, doc, mode, **kargs):
                     f.write(os.path.join(root, file))
 
         # aggiorno il database
-        
         try:
             database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status':model_status[3]}})
         except ValueError as error:
@@ -68,14 +67,18 @@ def elm_manager(app, content, database, doc, mode, **kargs):
         app.logger.info("Done training")
 
         # send webhook
-        if 'webhook' in kargs:
-            app.logger.info(f'Sending webhook to: {kargs["webhook"]}')
+        if kargs['webhook']:
+            if not 'headers' in kargs['webhook']: kargs['webhook']['headers'] = {}
+            if not 'data' in kargs['webhook']: kargs['webhook']['data'] = {}
+
+            app.logger.info(f'Sending webhook to: {kargs["webhook"]["url"]}')
             try:
-                requests.get(kargs['webhook'])
+                requests.request(kargs['webhook']['method'], kargs['webhook']['url'], 
+                        headers=kargs['webhook']['headers'], data=kargs['webhook']['data'])
             except:
                 app.logger.error("Webhook not send")
 
-    elif(mode=='predict'):
+    elif mode=='predict':
         # configurazione args per elm in modalità 'predict'
         args.predict = f'{os.getenv("INPUT_PATH")}pr_api.json'
 
@@ -96,7 +99,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
         app.logger.info("Done predict")
         return predict
 
-    elif (mode=='measurify'):
+    elif mode=='measurify':
         # configurazione args per elm in modalità 'evaluate'
         args.dataset = kargs['dataset']
         args.columns = kargs['columns']
@@ -135,7 +138,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
 
         # aggiorno il database
         try:
-            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status':model_status[3]}})
+            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status':model_status[2]}})
         except ValueError as error:
             app.logger.error(error)
             return
@@ -144,9 +147,13 @@ def elm_manager(app, content, database, doc, mode, **kargs):
 
 
         # send webhook
-        if 'webhook' in kargs:
-            app.logger.info(f'Sending webhook to: {kargs["webhook"]}')
+        if kargs['webhook']:
+            if not 'headers' in kargs['webhook']: kargs['webhook']['headers'] = kargs['headers']
+            if not 'data' in kargs['webhook']: kargs['webhook']['data'] = {'code':'model'}
+
+            app.logger.info(f'Sending webhook to: {kargs["webhook"]["url"]}')
             try:
-                requests.get(kargs['webhook'])
+                requests.request(kargs['webhook']['method'], kargs['webhook']['url'], 
+                        headers=kargs['webhook']['headers'], json=kargs['webhook']['data'], verify=False)
             except:
                 app.logger.error("Webhook not send")
