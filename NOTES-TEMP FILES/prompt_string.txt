@@ -4,3 +4,6 @@ python main.py -d input/ds_heart.json -e input/est_rf_c.json -p input/pp_1.json 
 
 
 python bruteForest.py -d input/ds_heart.json -e input/est_rf_c_brute.json -p input/pp_1.json -s input/ms_2.json -o input/output_capello.json
+
+
+python main.py --predict input/pr_heart_dt.json
