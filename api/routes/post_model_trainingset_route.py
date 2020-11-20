@@ -20,22 +20,24 @@ def post_model_trainingset_route(request, database, id):
 
     # recupero il modello dal database
     try:
-        value = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
+        doc = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
     except ValueError as error:
         return bad(error)
 
     # modifico il modello con i dati per il dataset
-    file_name = value['_id']+'.csv'
+    file_name = doc['_id']+'.csv'
     file_path = os.path.join(os.getenv('DATASETS_PATH'), file_name)
-    value['model']['ds'] = {}
-    value['model']['ds']['path'] = file_path
+    doc['model']['ds'] = {}
+    doc['model']['ds']['path'] = file_path
     for item in request.form:
-        value['model']['ds'][item] = json.loads(request.form[item])
-    value['status'] = model_status[1]
+        doc['model']['ds'][item] = json.loads(request.form[item])
+    doc['status'] = Status.RUNNING.value
+    doc['dataset'] = True
+    if 'error' in doc: del doc['error']
 
     # controllo parametri del ds
     try:
-        check_schema(value["model"]['ds'], f'{os.getenv("SCHEMAS_PATH")}dsSchema.json')
+        check_schema(doc["model"]['ds'], f'{os.getenv("SCHEMAS_PATH")}dsSchema.json')
     except ValueError as error:
         return bad(error)
 
@@ -49,8 +51,8 @@ def post_model_trainingset_route(request, database, id):
     
     # aggiorno il database con il ds e il nuovo stato
     try:
-        database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, {'$set':value})
+        database.replace_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, doc)
     except ValueError as e:
         return bad(error)
 
-    return answer(value)
+    return answer(doc)

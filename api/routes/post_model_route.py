@@ -37,18 +37,9 @@ def post_model_route(request, database):
 
     # aggiungo valori in risposta
     new_model['_id'] = str(uuid.uuid4())
-    new_model['status'] = model_status[0]
+    new_model['status'] = Status.RUNNING.value
+    new_model['dataset'] = False
     new_model['timestamp'] = str(datetime.now())
-
-    # if 'name' in content:
-    #      # verifico che il name non sia giè stato usato
-    #     if database.exist(os.getenv('MODELS_COLLECTION'),{'name':content['name']}):
-    #         error = api_errors['request']
-    #         error['details'] = f'The name is already been used ({content["name"]})'
-    #         return bad(error)
-    #     # sposto 'name' fuori dal model
-    #     new_model['name'] = new_model['model']['name']
-    #     del new_model['model']['name']
 
     # inserisco nel database
     try:

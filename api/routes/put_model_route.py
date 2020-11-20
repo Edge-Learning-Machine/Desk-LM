@@ -37,15 +37,17 @@ def put_model_route(request, database, id, app):
     # verifico la modalità e avvio elm
     if content['mode'] == 'evaluate':
         # verifico che sia già stato inserito il dataset
-        if not doc['status']['trainingset']:
+        if not doc['dataset']:
             error = api_errors['invalid']
             error['details'] = 'Missing dataset'
             return bad(error)
 
         # aggiorno stato e database
-        # doc['status'] = model_status[2]
+        doc['status'] = Status.TRAINING.value
+        if 'error' in doc: del doc['error']
+
         try:
-            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status.training':0}})
+            database.replace_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, doc)
         except ValueError as error:
             return bad(error)
 
@@ -60,13 +62,11 @@ def put_model_route(request, database, id, app):
             kwargs={'webhook':webhook,})
         elm_thread_evaluate.start()
 
-        # del doc['model']
-
         return answer(doc)
 
     elif content['mode'] == 'predict':
         # verifico che sia gia stato addestrato
-        if not doc['status']['trained']:
+        if doc['status'] != Status.CONCLUDED.value:
             error = api_errors['invalid']
             error['details'] = 'Wait for the training'
             return bad(error)
@@ -95,10 +95,10 @@ def put_model_route(request, database, id, app):
         # creo Dataset
         try:
             # recupero il token
-            headers = { 'Authorization': postLogin(content['url']) }
+            headers = { 'Authorization': postLogin() }
 
             # recupero gli items della feature
-            res = getResource(content['url'], 'features', content['feature'], {}, headers)
+            res = getResource('features', content['feature'], {}, headers)
 
             columns = []
             for item in res['items']:
@@ -114,7 +114,7 @@ def put_model_route(request, database, id, app):
             params['page'] = 1
 
             while True:
-                response = getResources(content['url'], 'measurements', params, headers, True)
+                response = getResources('measurements', params, headers, True)
                 for document in response['docs']:
                     for sample in document['samples']:
                         for i, v in enumerate(sample['values']):
@@ -126,13 +126,6 @@ def put_model_route(request, database, id, app):
         except Exception as e:
             error = api_errors['measurify']
             error['details'] = str(e)
-            return bad(error)
-
-        # aggiorno stato e database
-        # doc['status'] = model_status[2]
-        try:
-            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':doc})
-        except ValueError as error:
             return bad(error)
 
         # webhook

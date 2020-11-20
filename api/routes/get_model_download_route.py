@@ -19,7 +19,7 @@ def get_model_download_route(request, database, id):
         return bad(error)
 
     # verifico lo stato del modello
-    if not doc['status']['trained']:
+    if doc['status'] != Status.CONCLUDED.value:
         error = api_errors['invalid']
         error['details'] = 'Model not trainet yet'
         return bad(error)

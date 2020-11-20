@@ -12,7 +12,6 @@
             }
         },
         "n_preds": { "type": "number" },
-        "url": { "type": "string" },
         "feature": { "type": "string" },
         "items": { 
             "type": "array",
@@ -54,7 +53,7 @@
                 "properties": { "mode" : { "const": "measurify" } }
             },
             "then": {
-                "required": ["mode", "url", "feature", "items", "filter", "target"]
+                "required": ["mode", "feature", "items", "filter", "target"]
             }
         }
     ],

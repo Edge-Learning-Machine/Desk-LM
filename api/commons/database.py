@@ -50,6 +50,14 @@ class Database(object):
             error = api_errors['database']
             error['details'] = str(e)
             raise ValueError(error)
+
+    def replace_one(self, collection, filter, document):
+        try:
+            self.DATABASE[collection].replace_one(filter, document)
+        except Exception as e:
+            error = api_errors['database']
+            error['details'] = str(e)
+            raise ValueError(error)
  
     def delete_one(self, collection, data):
         try:

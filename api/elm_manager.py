@@ -46,7 +46,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
             app.logger.error(error)
             # aggiorno il database
             try:
-                database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status.error':str(error)}})
+                database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.ERROR.value, 'error': str(error)}})
             except ValueError as error:
                 app.logger.error(error)
             return
@@ -59,7 +59,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
 
         # aggiorno il database
         try:
-            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status':model_status[3]}})
+            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.CONCLUDED.value }})
         except ValueError as error:
             app.logger.error(error)
             return
@@ -71,7 +71,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
             if not 'headers' in kargs['webhook']: kargs['webhook']['headers'] = {}
             if not 'data' in kargs['webhook']: kargs['webhook']['data'] = {}
 
-            app.logger.info(f'Sending webhook to: {kargs["webhook"]["url"]}')
+            app.logger.info(f'Sending webhook ({kargs["webhook"]["method"]}) to: {kargs["webhook"]["url"]}')
             try:
                 requests.request(kargs['webhook']['method'], kargs['webhook']['url'], 
                         headers=kargs['webhook']['headers'], data=kargs['webhook']['data'])
@@ -125,7 +125,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
             app.logger.error(error)
             # aggiorno il database
             try:
-                database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status.error':str(error)}})
+                database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.ERROR.value, 'error':str(error)}})
             except ValueError as error:
                 app.logger.error(error)
             return
@@ -138,7 +138,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
 
         # aggiorno il database
         try:
-            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status':model_status[2]}})
+            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.CONCLUDED.value }})
         except ValueError as error:
             app.logger.error(error)
             return
@@ -151,7 +151,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
             if not 'headers' in kargs['webhook']: kargs['webhook']['headers'] = kargs['headers']
             if not 'data' in kargs['webhook']: kargs['webhook']['data'] = {'code':'model'}
 
-            app.logger.info(f'Sending webhook to: {kargs["webhook"]["url"]}')
+            app.logger.info(f'Sending webhook ({kargs["webhook"]["method"]}) to: {kargs["webhook"]["url"]}')
             try:
                 requests.request(kargs['webhook']['method'], kargs['webhook']['url'], 
                         headers=kargs['webhook']['headers'], json=kargs['webhook']['data'], verify=False)
