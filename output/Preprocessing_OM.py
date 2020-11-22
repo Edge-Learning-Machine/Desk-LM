@@ -14,6 +14,8 @@ def savePPParams(scaler, reduce_dims, estimator):
         sx = scaler.scale_
         if isinstance(scaler, preprocessing.StandardScaler):
             ux = scaler.mean_
+        elif isinstance(scaler, preprocessing.MinMaxScaler):
+            mx = scaler.min_
 
     if reduce_dims == None:
         pca_components = np.identity(estimator.dataset.X.shape[1])
@@ -41,6 +43,7 @@ def savePPParams(scaler, reduce_dims, estimator):
         elif isinstance(scaler, preprocessing.MinMaxScaler):
             myFile.write(f"#define MINMAX_SCALING\n\n")
             myFile.write(f"extern float s_x[N_ORIG_FEATURE];\n")
+            myFile.write(f"extern float m_x[N_ORIG_FEATURE];\n")
 
     '''
     if cfg.normalization!=None and cfg.regr and cfg.algo.lower() != 'dt':
@@ -74,5 +77,7 @@ def savePPParams(scaler, reduce_dims, estimator):
         elif isinstance(scaler, preprocessing.MinMaxScaler):
             myFile.write(f"#define MINMAX_SCALING\n\n")
             stri = create_matrices.createArray('float', "s_x", np.reshape(sx, (sx.shape[0], )), 'N_ORIG_FEATURE')
+            myFile.write(stri)
+            stri = create_matrices.createArray('float', "m_x", np.reshape(mx, (mx.shape[0], )), 'N_ORIG_FEATURE')
             myFile.write(stri)
     myFile.close()
