@@ -39,6 +39,7 @@ The .json file exposes the following properties:
 - path, path to the .csv dataset file 
 - skip_rows, number of rows to be skipped before the column names
 - select_columns, array of names of the columns to be selected as features (all the others are discarded)
+- select_columns, if true, means that all columns are selected
 - skip_columns, array of names of the columns to be skipped (ignored, if select_feature_columns is set)
 - target_column, name of the target column
 - time_series_column, name of the column for the time series. It is used only for time series computation and is mutually exclusive with all the other column options 
