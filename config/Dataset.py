@@ -65,6 +65,16 @@ class Dataset(object):
                 tsc = jsonData['time_series_column'].lower()
                 self.X = dfr[tsc]
                 self.y = dfr[tsc]
+            elif 'select_all_columns' in jsonData:
+                self.X = dfr
+                if 'target_column' in jsonData:
+                    tc = jsonData['target_column'].lower()
+                    self.y = dfr.loc[:,tc]
+                    dfr.drop(tc, axis = 1, inplace = True)
+                else:
+                    self.y = dfr.iloc[:,-1]
+                    dfr.drop(dfr.columns[-1], axis = 1, inplace = True)               
+                self.X = dfr
             elif 'select_columns' in jsonData:
                 sfc = jsonData['select_columns']
                 sfc = [s.lower() for s in sfc]
