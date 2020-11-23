@@ -51,15 +51,12 @@ def put_model_route(request, database, id, app):
         except ValueError as error:
             return bad(error)
 
-        # webhook
-        webhook = content['webhook'] if 'webhook' in content else None
-
         # avvio elm addestramento in parallelo (thread)
         from elm_manager import elm_manager
         elm_thread_evaluate = threading.Thread(
             target=elm_manager, 
             args=(app, content, database, doc, 'evaluate', ),
-            kwargs={'webhook':webhook,})
+            kwargs={'webhook':doc['webhook'],})
         elm_thread_evaluate.start()
 
         return answer(doc)
@@ -123,20 +120,28 @@ def put_model_route(request, database, id, app):
                 params['page'] += 1
 
             dataset = pd.DataFrame(ds, columns=columns)
+
+            # webhook
+            if doc['webhook']:
+                data = { 'progress': 60 }
+                app.logger.info(f'Sending webhook ({doc["webhook"]["method"]}) to: {doc["webhook"]["url"]}')
+                try:
+                    requests.request(doc['webhook']['method'], doc['webhook']['url'], 
+                            headers=headers, json=data, verify=False)
+                except:
+                    app.logger.error("Webhook not send")
+
         except Exception as e:
             error = api_errors['measurify']
             error['details'] = str(e)
             return bad(error)
-
-        # webhook
-        webhook = content['webhook'] if 'webhook' in content else None
     
         # avviare elm con dataset in parallelo (thread)
         from elm_manager import elm_manager
         elm_thread_measurify = threading.Thread(
             target=elm_manager, 
             args=(app, content, database, doc, 'measurify', ),
-            kwargs={'dataset':dataset, 'columns':columns, 'target':content['target'], 'webhook':webhook, 'headers':headers})
+            kwargs={'dataset':dataset, 'columns':columns, 'target':content['target'], 'webhook':doc['webhook'], 'headers':headers})
         elm_thread_measurify.start()
 
         return answer(doc)

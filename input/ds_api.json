@@ -1,5 +1,5 @@
 {
-    "path": "datasets/56980be6-280c-44b4-9f78-ce3d07cd6746.csv",
+    "path": "datasets/238712f1-68bc-45a7-8df3-46a487634cb1.csv",
     "test_size": 0.2,
     "skip_columns": [
         "age",

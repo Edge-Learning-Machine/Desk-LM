@@ -149,7 +149,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
         # send webhook
         if kargs['webhook']:
             if not 'headers' in kargs['webhook']: kargs['webhook']['headers'] = kargs['headers']
-            if not 'data' in kargs['webhook']: kargs['webhook']['data'] = {'code':'model'}
+            if not 'data' in kargs['webhook']: kargs['webhook']['data'] = {'progress': 100, 'status': 'concluded'}
 
             app.logger.info(f'Sending webhook ({kargs["webhook"]["method"]}) to: {kargs["webhook"]["url"]}')
             try:

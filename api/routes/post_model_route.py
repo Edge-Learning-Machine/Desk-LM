@@ -41,6 +41,13 @@ def post_model_route(request, database):
     new_model['dataset'] = False
     new_model['timestamp'] = str(datetime.now())
 
+    # webhook
+    if 'webhook' in content:
+        new_model['webhook'] = content['webhook']
+        del new_model['model']['webhook']
+    else:
+        new_model['webhook'] = None
+
     # inserisco nel database
     try:
         database.insert_one(os.getenv('MODELS_COLLECTION'), new_model)

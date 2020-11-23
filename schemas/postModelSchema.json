@@ -4,7 +4,8 @@
         "est": { "type": "object" },
         "pp": { "type": "object" },
         "ms": { "type": "object" },
-        "output": { "type": "object" }
+        "output": { "type": "object" },
+        "webhook": { "type": "object" }
     },
     "required": ["est", "pp", "ms", "output"],
     "additionalProperties": false
