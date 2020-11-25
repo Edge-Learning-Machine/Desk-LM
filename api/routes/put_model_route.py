@@ -123,7 +123,7 @@ def put_model_route(request, database, id, app):
 
             # webhook
             if doc['webhook']:
-                data = { 'progress': 60 }
+                data = { 'progress': 50 }
                 app.logger.info(f'Sending webhook ({doc["webhook"]["method"]}) to: {doc["webhook"]["url"]}')
                 try:
                     requests.request(doc['webhook']['method'], doc['webhook']['url'], 

@@ -1,5 +1,6 @@
 import os
 import sys
+import enum
 import json
 import argparse
 import zipfile
@@ -10,38 +11,38 @@ from jsonschema import validate
 sys.path.append('./')
 from main import ELM
 
+argument = {
+    'dataset': 'ds',
+    'estimator': 'est',
+    'preprocess': 'pp',
+    'selection': 'ms',
+    'output': 'output',
+    'predict': 'pr'
+}
+
 def elm_manager(app, content, database, doc, mode, **kargs):
     # configurazione args per elm
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--dataset')
-    parser.add_argument('-p', '--preprocess')
-    parser.add_argument('-e', '--estimator')
-    parser.add_argument('-s', '--selection')
-    parser.add_argument('-o', '--output')
-    parser.add_argument('--predict')
     parser.add_argument('--store', action="store_true")
     args = parser.parse_args()
 
     if mode=='evaluate':
-        # configurazione args per elm in modalità 'evaluate'
-        args.dataset = f'{os.getenv("INPUT_PATH")}ds_api.json'
-        args.preprocess = f'{os.getenv("INPUT_PATH")}pp_api.json'
-        args.estimator = f'{os.getenv("INPUT_PATH")}est_api.json'
-        args.selection = f'{os.getenv("INPUT_PATH")}ms_api.json'
-        args.output = f'{os.getenv("INPUT_PATH")}output_api.json'
-        args.store = True
-
         app.logger.info("Start training")
 
-        # configurazione e creazione dei file json
-        for element in doc['model']:
-            with open(f'{os.getenv("INPUT_PATH")}{element}_api.json','w') as file:
-                json.dump(doc['model'][element], file, indent=4)
+        # configurazione args per elm in modalità 'evaluate'
+        for index, (key, value) in enumerate(argument.items()):
+            if value in doc['model']:
+                with open(f'{os.getenv("INPUT_PATH")}{value}_api.json','w') as file:
+                    json.dump(doc['model'][value], file, indent=4)
+                args.__dict__[key] = f'{os.getenv("INPUT_PATH")}{value}_api.json'
+            else:
+                args.__dict__[key] = None
+        args.store = True
 
         # elm start
         try:
             elm = ELM(args)
-            elm.process(model_id=doc['_id'])
+            process = elm.process(model_id=doc['_id'])
         except ValueError as error:
             app.logger.error(error)
             # aggiorno il database
@@ -52,14 +53,23 @@ def elm_manager(app, content, database, doc, mode, **kargs):
             return
         
         # creazione zip output
-        with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + doc['_id'] + '.zip', 'w') as f:
-            for root, dirs, files in os.walk(os.getenv('OUTPUT_PATH')):
-                for file in files:
-                    f.write(os.path.join(root, file))
+        if args.output != None:
+            with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + doc['_id'] + '.zip', 'w') as f:
+                for root, dirs, files in os.walk(os.getenv('OUTPUT_PATH')):
+                    for file in files:
+                        f.write(os.path.join(root, file))
+
+        # result
+        result = {
+            'best_params': elm.estimator.best_params,
+            'metrics': process[0],
+            'score': process[-1]
+        }
+        if len(process) == 3: result['metrics_average'] = process[1]
 
         # aggiorno il database
         try:
-            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.CONCLUDED.value }})
+            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.CONCLUDED.value, 'result': result}})
         except ValueError as error:
             app.logger.error(error)
             return
@@ -79,10 +89,10 @@ def elm_manager(app, content, database, doc, mode, **kargs):
                 app.logger.error("Webhook not send")
 
     elif mode=='predict':
+        app.logger.info("Start predict")
+
         # configurazione args per elm in modalità 'predict'
         args.predict = f'{os.getenv("INPUT_PATH")}pr_api.json'
-
-        app.logger.info("Start predict")
 
         # salvataggio del file json
         with open(f'{os.getenv("INPUT_PATH")}pr_api.json','w') as file:
@@ -100,27 +110,25 @@ def elm_manager(app, content, database, doc, mode, **kargs):
         return predict
 
     elif mode=='measurify':
+        app.logger.info("Start training")
+
         # configurazione args per elm in modalità 'evaluate'
+        for index, (key, value) in enumerate(argument.items()):
+            if value in doc['model']:
+                with open(f'{os.getenv("INPUT_PATH")}{value}_api.json','w') as file:
+                    json.dump(doc['model'][value], file, indent=4)
+                args.__dict__[key] = f'{os.getenv("INPUT_PATH")}{value}_api.json'
+            else:
+                args.__dict__[key] = None
+        args.store = True
         args.dataset = kargs['dataset']
         args.columns = kargs['columns']
         args.target = kargs['target']
-        args.preprocess = f'{os.getenv("INPUT_PATH")}pp_api.json'
-        args.estimator = f'{os.getenv("INPUT_PATH")}est_api.json'
-        args.selection = f'{os.getenv("INPUT_PATH")}ms_api.json'
-        args.output = f'{os.getenv("INPUT_PATH")}output_api.json'
-        args.store = True
-
-        app.logger.info("Start training")
-
-        # configurazione e creazione dei file json
-        for element in doc['model']:
-            with open(f'{os.getenv("INPUT_PATH")}{element}_api.json','w') as file:
-                json.dump(doc['model'][element], file, indent=4)
 
         # elm start
         try:
             elm = ELM(args)
-            elm.process(model_id=doc['_id'])
+            process = elm.process(model_id=doc['_id'])
         except ValueError as error:
             app.logger.error(error)
             # aggiorno il database
@@ -131,14 +139,23 @@ def elm_manager(app, content, database, doc, mode, **kargs):
             return
 
         # creazione zip output
-        with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + doc['_id'] + '.zip', 'w') as f:
-            for root, dirs, files in os.walk(os.getenv('OUTPUT_PATH')):
-                for file in files:
-                    f.write(os.path.join(root, file))
+        if args.output != None:
+            with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + doc['_id'] + '.zip', 'w') as f:
+                for root, dirs, files in os.walk(os.getenv('OUTPUT_PATH')):
+                    for file in files:
+                        f.write(os.path.join(root, file))
+
+        # result
+        result = {
+            'best_params': elm.estimator.best_params,
+            'metrics': process[0],
+            'score': process[-1]
+        }
+        if len(process) == 3: result['metrics_average'] = process[1]
 
         # aggiorno il database
         try:
-            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.CONCLUDED.value }})
+            database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.CONCLUDED.value, 'result': result }})
         except ValueError as error:
             app.logger.error(error)
             return
@@ -149,7 +166,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
         # send webhook
         if kargs['webhook']:
             if not 'headers' in kargs['webhook']: kargs['webhook']['headers'] = kargs['headers']
-            if not 'data' in kargs['webhook']: kargs['webhook']['data'] = {'progress': 100, 'status': 'concluded'}
+            if not 'data' in kargs['webhook']: kargs['webhook']['data'] = {'progress': 100}
 
             app.logger.info(f'Sending webhook ({kargs["webhook"]["method"]}) to: {kargs["webhook"]["url"]}')
             try:

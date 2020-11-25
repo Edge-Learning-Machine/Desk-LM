@@ -1,3 +1,4 @@
 {
-    "is_dataset_test": true
+    "is_dataset_test": true,
+    "dataset_test_size": 0.2
 }

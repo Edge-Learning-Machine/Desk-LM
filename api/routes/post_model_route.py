@@ -41,6 +41,12 @@ def post_model_route(request, database):
     new_model['dataset'] = False
     new_model['timestamp'] = str(datetime.now())
 
+    # output
+    if 'output' in content:
+        new_model['output'] = f"{new_model['_id']}.zip"
+    else:
+        new_model['output'] = None
+
     # webhook
     if 'webhook' in content:
         new_model['webhook'] = content['webhook']

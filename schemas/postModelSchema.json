@@ -7,6 +7,6 @@
         "output": { "type": "object" },
         "webhook": { "type": "object" }
     },
-    "required": ["est", "pp", "ms", "output"],
+    "required": ["est"],
     "additionalProperties": false
 }

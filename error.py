@@ -16,5 +16,7 @@ errors = {
     'predict_config':'Predict configuration error',
     'tscv_config':'TSCV configuration error',
     'tripleES_wrong_nsplits' : 'n_splits is too high',
-    'miss_n_preds' : 'n_preds parameter is needed for predicting a time series'
+    'miss_n_preds' : 'n_preds parameter is needed for predicting a time series',
+    'svm_config': 'SVM configuration error',
+    'tripleES_config': 'TripleES configuration error'
 }

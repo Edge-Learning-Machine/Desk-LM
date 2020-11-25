@@ -41,10 +41,13 @@ class ANN(Estimator):
             from keras.wrappers.scikit_learn import KerasClassifier
             #self.estimator = KerasClassifier()
             self.is_regr = False
-        else:
+        elif jsonData['estimator'].endswith('Regressor'):
             from keras.wrappers.scikit_learn import KerasRegressor
             #self.estimator = KerasRegressor()
             self.is_regr = True
+        else:
+            print(f'Invalid value for estimator name: {jsonData["estimator"]}')
+            raise ValueError(error.errors['estimator_config'])
         self.params = {}
         
         import sys

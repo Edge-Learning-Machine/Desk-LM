@@ -18,18 +18,7 @@
             "items": { "type": "string" }
         },
         "filter": { "type": "string" },
-        "target": { "type": "string" },
-        "webhook": { 
-            "type": "object",
-            "properties": {
-                "url": { "type": "string" },
-                "method": { "type": "string" },
-                "headers": { "type": "object" },
-                "data": { "type": "object" }
-            },
-            "required": ["url","method"],
-            "additionalProperties": false
-        }
+        "target": { "type": "string" }
     },
     "allOf": [
         {

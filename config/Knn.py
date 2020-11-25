@@ -34,10 +34,13 @@ class Knn(Estimator):
             from sklearn.neighbors import KNeighborsClassifier
             self.estimator = KNeighborsClassifier()
             self.is_regr = False
-        else:
+        elif jsonData['estimator'].endswith('Regressor'):
             from sklearn.neighbors import KNeighborsRegressor
             self.estimator = KNeighborsRegressor()
             self.is_regr = True
+        else:
+            print(f'Invalid value for estimator name: {jsonData["estimator"]}')
+            raise ValueError(error.errors['estimator_config'])
         self.params = {}
         
         import sys

@@ -24,6 +24,12 @@ def get_model_download_route(request, database, id):
         error['details'] = 'Model not trainet yet'
         return bad(error)
     
+    # verifico che 'output' sia stato configurato
+    if not doc['output']:
+        error = api_errors['invalid']
+        error['details'] = 'Model does not have an output configuration'
+        return bad(error)
+    
     path = f'{os.getenv("ZIP_PATH")}{doc["_id"]}.zip'
 
     if os.path.isfile(path):

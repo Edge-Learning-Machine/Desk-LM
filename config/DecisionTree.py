@@ -34,10 +34,13 @@ class DecisionTree(Estimator):
             from sklearn.tree import DecisionTreeClassifier
             self.estimator = DecisionTreeClassifier(criterion='gini')
             self.is_regr = False
-        else:
+        elif jsonData['estimator'].endswith('Regressor'):
             from sklearn.tree import DecisionTreeRegressor
             self.estimator = DecisionTreeRegressor(criterion='mse')
             self.is_regr = True
+        else:
+            print(f'Invalid value for estimator name: {jsonData["estimator"]}')
+            raise ValueError(error.errors['estimator_config'])
         self.params = {}
         
         import sys

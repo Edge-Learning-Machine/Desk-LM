@@ -59,10 +59,10 @@ class Estimator(object):
                 esti.assign_dataset(dataset)
                 return esti
         except FileNotFoundError as err:
-                template = "An exception of type {0} occurred. Arguments: {1!r}"
-                message = template.format(type(err).__name__, err.args)
-                print(message)
-                raise ValueError(error.errors['estimator_config'])
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(err).__name__, err.args)
+            print(message)
+            raise ValueError(error.errors['estimator_config'])
 
     def assign_dataset(self, dataset):
         self.dataset = dataset
@@ -75,6 +75,7 @@ class Estimator(object):
         pipe = self.createPipe(prep)
         param_grid = self.createGrid(prep)
         grid = self.fitGrid(pipe, param_grid, ms, X_train, y_train)
+        self.best_params = grid.best_params_
         print(grid.best_score_)
         print(grid.best_params_)
         return grid.best_estimator_

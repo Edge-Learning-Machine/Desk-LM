@@ -79,11 +79,11 @@ class ELM(object):
             if isinstance(m, TripleES):
                 if not hasattr(self.predict, 'n_preds'):
                     raise ValueError(error.errors['miss_n_preds'])
-                p = m.predict_from_series(self.predict.samples, self.predict.n_preds)
+                predicted = m.predict_from_series(self.predict.samples, self.predict.n_preds)
             else:
-                p = m.predict(self.predict.samples)
-            print(f'Predicted values: {p}')
-            return p
+                predicted = m.predict(self.predict.samples)
+            print(f'Predicted values: {predicted}')
+            results = predicted
         else:
             from sklearn.model_selection import train_test_split
             shuffle = True
@@ -104,6 +104,7 @@ class ELM(object):
             if hasattr(self.modelselection, 'metrics_average'):
                 score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred, average=self.modelselection.metrics_average)
                 print(f'{self.modelselection.metrics}, average={self.modelselection.metrics_average} in testing set: {score}')
+                results = (self.modelselection.metrics, self.modelselection.metrics_average, score)
             else:
                 if hasattr(self.modelselection, 'is_RMSE'):
                     score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred, squared=not self.modelselection.is_RMSE)
@@ -115,6 +116,7 @@ class ELM(object):
                     score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred)
                     print(f'{self.modelselection.metrics} in testing set: {score}')
                 #Add/change directly above if you want a different metrics (e.g., r2_score)
+                results = (self.modelselection.metrics, score)
 
             if self.args.store == True:
                 model_id = kargs['model_id'] if 'model_id' in kargs  else str(uuid.uuid4())
@@ -151,7 +153,7 @@ class ELM(object):
                         if self.output.dataset_test_size == 1:
                             omgr.OutputMgr.saveTestingSet(X_test, y_test, self.estimator)
                         elif self.output.dataset_test_size < 1:
-                            n_tests = int(y_test * self.output.dataset_test_size.shape[0])
+                            n_tests = int((y_test * self.output.dataset_test_size).shape[0])
                             omgr.OutputMgr.saveTestingSet(X_test[0:n_tests], y_test[0:n_tests], self.estimator)
                         elif self.output.dataset_test_size != None:
                             omgr.OutputMgr.saveTestingSet(X_test[0:self.output.dataset_test_size].shape[0], y_test[0:self.output.dataset_test_size].shape[0], self.estimator)
@@ -171,6 +173,7 @@ class ELM(object):
                         toDirectory = f"{self.output.export_path}/dlm/model"
                         copy_tree(fromDirectory, toDirectory)
         print('The end')
+        return results
 
 
 if __name__ == '__main__':
