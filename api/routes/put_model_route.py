@@ -10,39 +10,39 @@ from commons.response import *
 from commons.measurify import *
 
 def put_model_route(request, database, id, app):
-    # verifico che l'utente sia autorizzato
+    # check authorization
     try: 
         check_authorization(database, request.headers.get('Authorization'))
     except:
         return bad(api_errors['auth'])
 
-    # verifico che la richiesta sia presente e in formato JSON valido
+    # check json format
     try:
         content = check_json(request)
     except ValueError as error:
         return bad(error)
 
-    # controllo parametri della richiesta
+    # check request params
     try:
         check_schema(content, f'{os.getenv("SCHEMAS_PATH")}putSchema.json')
     except ValueError as error:
         return bad(error)
 
-    # recupero il modello dal database
+    # get model from the database
     try:
         doc = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
     except ValueError as error:
         return bad(error)
 
-    # verifico la modalità e avvio elm
+    # select the mode
     if content['mode'] == 'evaluate':
-        # verifico che sia già stato inserito il dataset
+        # check 'dataset' param
         if not doc['dataset']:
             error = api_errors['invalid']
             error['details'] = 'Missing dataset'
             return bad(error)
 
-        # aggiorno stato e database
+        # status and database updates
         doc['status'] = Status.TRAINING.value
         if 'error' in doc: del doc['error']
 
@@ -51,7 +51,7 @@ def put_model_route(request, database, id, app):
         except ValueError as error:
             return bad(error)
 
-        # avvio elm addestramento in parallelo (thread)
+        # start training elm (thread)
         from elm_manager import elm_manager
         elm_thread_evaluate = threading.Thread(
             target=elm_manager, 
@@ -62,23 +62,23 @@ def put_model_route(request, database, id, app):
         return answer(doc)
 
     elif content['mode'] == 'predict':
-        # verifico che sia gia stato addestrato
+        # check 'status' param
         if doc['status'] != Status.CONCLUDED.value:
             error = api_errors['invalid']
             error['details'] = 'Wait for the training'
             return bad(error)
 
-        # aggiungo il model_id e rimuovo il mode dalla richiesta
+        # set elm params
         del content['mode']
         content['model_id'] = doc['_id']
 
-        # controllo parametri del pr
+        # check predict params
         try: 
             check_schema(content, f'{os.getenv("SCHEMAS_PATH")}predictSchema.json')
         except ValueError as error:
             return bad(error)
             
-        # avvio elm predizione
+        # start prediction elm 
         from elm_manager import elm_manager
         try:
             result = elm_manager(app, content, database, doc, 'predict')
@@ -89,12 +89,12 @@ def put_model_route(request, database, id, app):
             return bad(error)
 
     elif content['mode'] == 'measurify':
-        # creo Dataset
+        # create Dataset
         try:
-            # recupero il token
+            # get token from Measurify
             headers = { 'Authorization': postLogin() }
 
-            # recupero gli items della feature
+            # get items of the feature
             res = getResource('features', content['feature'], {}, headers)
 
             columns = []
@@ -136,7 +136,7 @@ def put_model_route(request, database, id, app):
             error['details'] = str(e)
             return bad(error)
     
-        # avviare elm con dataset in parallelo (thread)
+        # start training elm with dataset (thread)
         from elm_manager import elm_manager
         elm_thread_measurify = threading.Thread(
             target=elm_manager, 

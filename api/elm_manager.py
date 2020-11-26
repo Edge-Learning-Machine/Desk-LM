@@ -21,7 +21,7 @@ argument = {
 }
 
 def elm_manager(app, content, database, doc, mode, **kargs):
-    # configurazione args per elm
+    # args configuration for elm
     parser = argparse.ArgumentParser()
     parser.add_argument('--store', action="store_true")
     args = parser.parse_args()
@@ -29,7 +29,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
     if mode=='evaluate':
         app.logger.info("Start training")
 
-        # configurazione args per elm in modalità 'evaluate'
+        # args configuration for elm in 'evaluate' mode
         for index, (key, value) in enumerate(argument.items()):
             if value in doc['model']:
                 with open(f'{os.getenv("INPUT_PATH")}{value}_api.json','w') as file:
@@ -45,14 +45,14 @@ def elm_manager(app, content, database, doc, mode, **kargs):
             process = elm.process(model_id=doc['_id'])
         except ValueError as error:
             app.logger.error(error)
-            # aggiorno il database
+            # database update
             try:
                 database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.ERROR.value, 'error': str(error)}})
             except ValueError as error:
                 app.logger.error(error)
             return
         
-        # creazione zip output
+        # zip output creation
         if args.output != None:
             with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + doc['_id'] + '.zip', 'w') as f:
                 for root, dirs, files in os.walk(os.getenv('OUTPUT_PATH')):
@@ -67,7 +67,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
         }
         if len(process) == 3: result['metrics_average'] = process[1]
 
-        # aggiorno il database
+        # database update
         try:
             database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.CONCLUDED.value, 'result': result}})
         except ValueError as error:
@@ -91,10 +91,9 @@ def elm_manager(app, content, database, doc, mode, **kargs):
     elif mode=='predict':
         app.logger.info("Start predict")
 
-        # configurazione args per elm in modalità 'predict'
+        # args configuration for elm in 'predict' mode
         args.predict = f'{os.getenv("INPUT_PATH")}pr_api.json'
 
-        # salvataggio del file json
         with open(f'{os.getenv("INPUT_PATH")}pr_api.json','w') as file:
             json.dump(content, file, indent=4)
 
@@ -112,7 +111,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
     elif mode=='measurify':
         app.logger.info("Start training")
 
-        # configurazione args per elm in modalità 'evaluate'
+        # args configuration for elm in 'measurify' mode
         for index, (key, value) in enumerate(argument.items()):
             if value in doc['model']:
                 with open(f'{os.getenv("INPUT_PATH")}{value}_api.json','w') as file:
@@ -131,14 +130,14 @@ def elm_manager(app, content, database, doc, mode, **kargs):
             process = elm.process(model_id=doc['_id'])
         except ValueError as error:
             app.logger.error(error)
-            # aggiorno il database
+            # database update
             try:
                 database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.ERROR.value, 'error':str(error)}})
             except ValueError as error:
                 app.logger.error(error)
             return
 
-        # creazione zip output
+        # zip output creation
         if args.output != None:
             with zipfile.ZipFile(os.getenv('ZIP_PATH') + '/' + doc['_id'] + '.zip', 'w') as f:
                 for root, dirs, files in os.walk(os.getenv('OUTPUT_PATH')):
@@ -153,7 +152,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
         }
         if len(process) == 3: result['metrics_average'] = process[1]
 
-        # aggiorno il database
+        # database update
         try:
             database.update_one(os.getenv('MODELS_COLLECTION'), {'_id':doc['_id']}, {'$set':{'status': Status.CONCLUDED.value, 'result': result }})
         except ValueError as error:

@@ -7,19 +7,19 @@ from commons.response import *
 from datetime import datetime
 
 def post_model_route(request, database):
-    # verifico che l'utente sia autorizzato
+    # check authorization
     try: 
         check_authorization(database, request.headers.get('Authorization'))
     except:
         return bad(api_errors['auth'])
 
-    # verifico che la richiesta sia presente e in formato JSON valido
+    # check json format
     try:
         content = check_json(request)
     except ValueError as error:
         return bad(error)
 
-    # verifico parametri modello
+    # check model params
     try:
         check_schema(content, f'{os.getenv("SCHEMAS_PATH")}postModelSchema.json')
     except ValueError as error:
@@ -31,7 +31,7 @@ def post_model_route(request, database):
         except ValueError as error:
             return bad(error)
 
-    # creazione nuovo modello
+    # new model creation
     new_model = {}
     new_model['model'] = content
 
@@ -54,7 +54,7 @@ def post_model_route(request, database):
     else:
         new_model['webhook'] = None
 
-    # inserisco nel database
+    # add to database
     try:
         database.insert_one(os.getenv('MODELS_COLLECTION'), new_model)
     except ValueError as error:

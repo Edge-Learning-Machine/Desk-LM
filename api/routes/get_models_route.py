@@ -4,13 +4,13 @@ from commons.checker import *
 from commons.response import *
 
 def get_models_route(request, database):
-    # verifico che l'utente sia autorizzato
+    # check authorization
     try: 
         check_authorization(database, request.headers.get('Authorization'))
     except:
         return bad(api_errors['auth'])
 
-    # recupero i modelli dal database
+    # get models from the database
     try:
         docs = database.find(os.getenv('MODELS_COLLECTION'),'')
     except ValueError as error:

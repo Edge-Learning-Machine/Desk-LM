@@ -1,3 +1,8 @@
 {
-    "estimator": "TripleES"
+    "estimator": "KNeighborsClassifier",
+    "n_neighbors_array": [
+        2,
+        5,
+        10
+    ]
 }

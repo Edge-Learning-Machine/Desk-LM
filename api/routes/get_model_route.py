@@ -5,13 +5,13 @@ from commons.response import *
 
 
 def get_model_route(request, database, id):
-     # verifico che l'utente sia autorizzato
+     # check authorization
     try: 
         check_authorization(database, request.headers.get('Authorization'))
     except:
         return bad(api_errors['auth'])
     
-     # recupero il documento dal database
+     # get model from the database
     try:
         doc = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
     except ValueError as error:

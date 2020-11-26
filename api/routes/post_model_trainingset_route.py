@@ -5,26 +5,26 @@ from commons.checker import *
 from commons.response import *
 
 def post_model_trainingset_route(request, database, id):
-    # verifico che l'utente sia autorizzato
+    # check authorization
     try: 
         check_authorization(database, request.headers.get('Authorization'))
     except:
         return bad(api_errors['auth'])
 
-    # verifico che ci sia il file csv allegato
+    # check csv file 
     file_csv = request.files.get('file')
     if not file_csv:
         error = api_errors['notfound']
         error['details'] = 'Missing csv file'
         return bad(error)
 
-    # recupero il modello dal database
+    # get model from the database
     try:
         doc = database.find_one(os.getenv('MODELS_COLLECTION'),{'_id':id})
     except ValueError as error:
         return bad(error)
 
-    # modifico il modello con i dati per il dataset
+    # add ds params to the model
     file_name = doc['_id']+'.csv'
     file_path = os.path.join(os.getenv('DATASETS_PATH'), file_name)
     doc['model']['ds'] = {}
@@ -35,13 +35,13 @@ def post_model_trainingset_route(request, database, id):
     doc['dataset'] = True
     if 'error' in doc: del doc['error']
 
-    # controllo parametri del ds
+    # check dataset params
     try:
         check_schema(doc["model"]['ds'], f'{os.getenv("SCHEMAS_PATH")}dsSchema.json')
     except ValueError as error:
         return bad(error)
 
-    # salvo il file rinominandolo
+    # save the file
     try:
         file_csv.save(file_path)
     except Exception as e:
@@ -49,7 +49,7 @@ def post_model_trainingset_route(request, database, id):
         error['details'] = str(e)
         return bad(error)
     
-    # aggiorno il database con il ds e il nuovo stato
+    # database replace
     try:
         database.replace_one(os.getenv('MODELS_COLLECTION'), {'_id':id}, doc)
     except ValueError as e:
