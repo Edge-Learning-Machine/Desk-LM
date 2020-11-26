@@ -1,17 +1,17 @@
 #ifndef PPPARAMS_H
 #define PPPARAMS_H
 
-#ifndef N_FEATURE
-#define N_FEATURE 1
+#ifndef PCA_N_FEATURE
+#define PCA_N_FEATURE 1
 #endif
 
-#ifndef N_ORIG_FEATURE
-#define N_ORIG_FEATURE 2
+#ifndef PCA_N_ORIG_FEATURE
+#define PCA_N_ORIG_FEATURE 2
 #endif
 
-extern float pca_components[N_FEATURE][N_ORIG_FEATURE];
+extern float pca_components[PCA_N_FEATURE][PCA_N_ORIG_FEATURE];
 
 #define MINMAX_SCALING
 
-extern float s_x[N_ORIG_FEATURE];
+extern float s_x[PCA_N_ORIG_FEATURE];
 #endif

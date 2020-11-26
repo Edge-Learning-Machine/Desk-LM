@@ -5,7 +5,7 @@ Numpy version
 1.18.5
 Sklearn version
 0.23.1
-0.6286764705882353
+0.5441176470588235
 {'esti__max_depth': 12, 'esti__max_leaf_nodes': 50, 'esti__min_samples_leaf': 1, 'esti__min_samples_split': 2, 'reduce_dims__n_components': 1, 'scale': MinMaxScaler()}
-accuracy_score in testing set: 0.5161290322580645
+accuracy_score in testing set: 0.6774193548387096
 The end
