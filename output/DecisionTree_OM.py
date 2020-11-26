@@ -23,19 +23,24 @@ class DecisionTree_OM(OutputMgr):
         myFile.write(f"#ifndef DT_PARAMS_H\n")
         myFile.write(f"#define DT_PARAMS_H\n\n")
         if self.estimator.is_regr == False:
-            myFile.write(f"#define N_CLASS {self.estimator.n_classes}\n\n")
+            myFile.write(f"#define N_CLASS {self.estimator.n_classes}\n")
+            leaf_nodes = children_left == children_right
+            n_leaves = np.count_nonzero(leaf_nodes)
+            myFile.write(f"#define N_LEAVES {n_leaves}\n\n")
         else:
             myFile.write(f"#define N_CLASS 0\n\n")
+            myFile.write(f"#define VALUES_DIM {values.shape[2]}\n\n")
         myFile.write(f"#define N_NODES {n_nodes}\n\n")
-        myFile.write(f"#define VALUES_DIM {values.shape[2]}\n\n")
 
         myFile.write(f"extern int children_left[N_NODES];\n")
         myFile.write(f"extern int children_right[N_NODES];\n")
         myFile.write(f"extern int feature[N_NODES];\n")
         myFile.write(f"extern float threshold[N_NODES];\n")
-        myFile.write(f"extern int values[N_NODES][VALUES_DIM];\n")
-        if self.estimator.is_regr == False:
+        if self.estimator.is_regr == True:
+            myFile.write(f"extern int values[N_NODES][VALUES_DIM];\n")
+        else:
             myFile.write(f"extern int target_classes[N_CLASS];\n")
+            myFile.write(f"extern int leaf_nodes[N_LEAVES][2];\n")
         myFile.write(f"\n#endif")
         myFile.close()
 
@@ -58,9 +63,15 @@ class DecisionTree_OM(OutputMgr):
         myFile.write(stri)
         stri = create_matrices.createArray("float", "threshold", threshold, 'N_NODES')
         myFile.write(stri)
-        stri = create_matrices.createMatrix2('int', 'values', values, 'N_NODES', 'VALUES_DIM') 
-        myFile.write(stri)
-        if self.estimator.is_regr == False:
+        if self.estimator.is_regr == True:
+            stri = create_matrices.createMatrix2('int', 'values', values, 'N_NODES', 'VALUES_DIM') 
+            myFile.write(stri)
+        else:
             stri = create_matrices.createArray("int", "target_classes", target_classes, 'N_CLASS')
+            myFile.write(stri)
+            argmaxs = np.argmax(values[leaf_nodes][:,0], axis=1).reshape(-1,1)
+            leaf_nodes_idx = np.asarray(np.nonzero(leaf_nodes)).T
+            leaf_nodes = np.concatenate((leaf_nodes_idx, argmaxs), axis=1)
+            stri = create_matrices.createMatrix('int', 'leaf_nodes', leaf_nodes, 'N_LEAVES', '2') 
             myFile.write(stri)
         myFile.close()

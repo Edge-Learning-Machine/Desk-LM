@@ -15,6 +15,7 @@
                 "type": "string"
             }
             },
+        "select_all_columns": {"type": "boolean"},
         "target_column": {"type": "string"},
         "time_series_column": {"type": "string"},
         "sep": {"type": "string"},
@@ -22,8 +23,9 @@
         "test_size": {"type": "number"},
         "categorical_multiclass": {"type": "boolean"}
     },
-    "anyOf": [
+    "oneOf": [
         { "required": ["path","select_columns"] },
+        { "required": ["path","select_all_columns"] },
         { "required": ["path","skip_columns"] },
         { "required": ["path","time_series_column"] }
     ],
