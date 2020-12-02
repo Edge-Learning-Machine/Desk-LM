@@ -48,25 +48,41 @@ class RandomForest_OM(OutputMgr):
 		
 		myFile.write(f"#define FOREST_DIM {len(rf)}\n\n")
 		
-		if self.estimator.is_regr == False:
-			myFile.write(f"#define N_CLASS {self.estimator.n_classes}\n\n")
-		else:
-			myFile.write(f"#define N_CLASS 0\n\n")
 			
 		for i, t in enumerate(rf):
 			n_nodes = getattr(t.tree_,'node_count')
 			values = getattr(t.tree_,'value')
+			children_left = getattr(t.tree_,'children_left')
+			children_right = getattr(t.tree_,'children_right')
 			
 			myFile.write(f"/// VARIABLES FOR TREE NUMBER {i} \n\n")
 			myFile.write(f"#define N_NODES_t{i} {n_nodes}\n\n")
 			myFile.write(f"#define VALUES_DIM_t{i} {values.shape[2]}\n\n")
+			
+			if self.estimator.is_regr == False:
+				myFile.write(f"#define N_CLASS {self.estimator.n_classes}\n")
+				leaf_nodes = children_left == children_right
+				n_leaves = np.count_nonzero(leaf_nodes)
+				myFile.write(f"#define N_LEAVES_t{i} {n_leaves}\n\n")
+			else:
+				myFile.write(f"#define N_CLASS 0\n\n")
+				myFile.write(f"#define VALUES_DIM {values.shape[2]}\n\n")
 
 			myFile.write(f"extern int children_left_t{i}[N_NODES_t{i}];\n")
 			myFile.write(f"extern int children_right_t{i}[N_NODES_t{i}];\n")
 			myFile.write(f"extern int feature_t{i}[N_NODES_t{i}];\n")
 			myFile.write(f"extern float threshold_t{i}[N_NODES_t{i}];\n")
-			myFile.write(f"extern int values_t{i}[N_NODES_t{i}][VALUES_DIM_t{i}];\n")
-			myFile.write(f"\n\n")
+			
+			if self.estimator.is_regr == True:
+				myFile.write(f"extern int values_t{i}[N_NODES_t{i}][VALUES_DIM_t{i}];\n")
+			else:
+				
+				myFile.write(f"extern int leaf_nodes_t{i}[N_LEAVES_t{i}][2];\n")
+		
+		if self.estimator.is_regr == False:
+			myFile.write(f"extern int target_classes[N_CLASS];\n")
+
+		myFile.write(f"\n\n")
 		
 		myFile.write(f"/// Arrays for the whole forest to make it easier to use \n\n")
 		myFile.write(f"extern int target_classes[N_CLASS];\n")
@@ -75,7 +91,10 @@ class RandomForest_OM(OutputMgr):
 		myFile.write(f"extern int* forest_children_right[FOREST_DIM];\n")
 		myFile.write(f"extern int* forest_feature[FOREST_DIM];\n")
 		myFile.write(f"extern float* forest_threshold[FOREST_DIM];\n")
-		myFile.write(f"extern int* forest_values[FOREST_DIM];\n")
+		if self.estimator.is_regr == False:
+			myFile.write(f"extern int* forest_leaves[FOREST_DIM];\n")
+		else:
+			myFile.write(f"extern int* forest_values[FOREST_DIM];\n")
 			
 		myFile.write(f"\n#endif")
 		myFile.close()
@@ -97,6 +116,7 @@ class RandomForest_OM(OutputMgr):
 			values = getattr(t.tree_,'value')
 			children_left = getattr(t.tree_,'children_left')
 			children_right = getattr(t.tree_,'children_right')
+			leaf_nodes = children_left == children_right
 			feature = getattr(t.tree_,'feature')
 			threshold = getattr(t.tree_,'threshold')
 			target_classes = np.unique(self.estimator.dataset.y)
@@ -110,8 +130,19 @@ class RandomForest_OM(OutputMgr):
 			myFile.write(stri)
 			stri = create_matrices.createArray("float", f"threshold_t{i}", threshold, f'N_NODES_t{i}')
 			myFile.write(stri)
-			stri = create_matrices.createMatrix2('int', f'values_t{i}', values, f'N_NODES_t{i}', f'VALUES_DIM_t{i}') 
-			myFile.write(stri)
+			
+
+				
+			if self.estimator.is_regr == True:
+				stri = create_matrices.createMatrix2('int', 'values_t{i}', values, 'N_NODES_t{i}', 'VALUES_DIM_t{i}') 
+				myFile.write(stri)
+			else:
+				argmaxs = np.argmax(values[leaf_nodes][:,0], axis=1).reshape(-1,1)
+				leaf_nodes_idx = np.asarray(np.nonzero(leaf_nodes)).T
+				leaf_nodes = np.concatenate((leaf_nodes_idx, argmaxs), axis=1)
+				stri = create_matrices.createMatrix('int', f'leaf_nodes_t{i}', leaf_nodes, 'N_LEAVES_t{i}', '2') 
+				myFile.write(stri)
+		
 			
 		
 		if self.estimator.is_regr == False:
@@ -134,8 +165,13 @@ class RandomForest_OM(OutputMgr):
 		stri = unrollForest("threshold", len(rf))
 		myFile.write(f"float* forest_threshold[FOREST_DIM] = {stri}\n")
 		
-		stri = unrollPointers("values", len(rf))
-		myFile.write(f"int* forest_values[FOREST_DIM] = {stri}\n")
+		if self.estimator.is_regr == True:
+			stri = unrollPointers("values", len(rf))
+			myFile.write(f"int* forest_values[FOREST_DIM] = {stri}\n")
+		else:
+			stri = unrollPointers("leaf_nodes", len(rf))
+			myFile.write(f"int* forest_leaves[FOREST_DIM] = {stri}\n")
+			
 		
 		myFile.close()
 		
