@@ -41,7 +41,6 @@ class RandomForest_OM(OutputMgr):
 		rf = best_estimator.estimators_
 		
 
-
 		myFile = open(f"{outdirI}RF_params.h","w+")
 		myFile.write(f"#ifndef RF_PARAMS_H\n")
 		myFile.write(f"#define RF_PARAMS_H\n\n")
@@ -66,7 +65,8 @@ class RandomForest_OM(OutputMgr):
 				myFile.write(f"#define N_LEAVES_t{i} {n_leaves}\n\n")
 			else:
 				myFile.write(f"#define N_CLASS 0\n\n")
-				myFile.write(f"#define VALUES_DIM {values.shape[2]}\n\n")
+			
+			myFile.write(f"#define VALUES_DIM {values.shape[2]}\n\n")
 
 			myFile.write(f"extern int children_left_t{i}[N_NODES_t{i}];\n")
 			myFile.write(f"extern int children_right_t{i}[N_NODES_t{i}];\n")
@@ -76,8 +76,7 @@ class RandomForest_OM(OutputMgr):
 			if self.estimator.is_regr == True:
 				myFile.write(f"extern int values_t{i}[N_NODES_t{i}][VALUES_DIM_t{i}];\n")
 			else:
-				
-				myFile.write(f"extern int leaf_nodes_t{i}[N_LEAVES_t{i}][2];\n")
+				myFile.write(f"extern int leaf_nodes_t{i}[N_LEAVES_t{i}][2+VALUES_DIM];\n")
 		
 		if self.estimator.is_regr == False:
 			myFile.write(f"extern int target_classes[N_CLASS];\n")
@@ -111,6 +110,10 @@ class RandomForest_OM(OutputMgr):
 		sys.path.insert(1, 'utils')
 		import create_matrices
 		
+		
+		
+		target_classes = np.unique(self.estimator.dataset.y)
+		
 		for i,t in enumerate(rf):
 			
 			values = getattr(t.tree_,'value')
@@ -119,8 +122,7 @@ class RandomForest_OM(OutputMgr):
 			leaf_nodes = children_left == children_right
 			feature = getattr(t.tree_,'feature')
 			threshold = getattr(t.tree_,'threshold')
-			target_classes = np.unique(self.estimator.dataset.y)
-			
+			n_leaves = np.count_nonzero(leaf_nodes)
 			
 			stri = create_matrices.createArray("int", f"children_left_t{i}", children_left, f'N_NODES_t{i}')
 			myFile.write(stri)
@@ -134,17 +136,19 @@ class RandomForest_OM(OutputMgr):
 
 				
 			if self.estimator.is_regr == True:
-				stri = create_matrices.createMatrix2('int', 'values_t{i}', values, 'N_NODES_t{i}', 'VALUES_DIM_t{i}') 
+				stri = create_matrices.createMatrix2('int', f'values_t{i}', values, f'N_NODES_t{i}', f'VALUES_DIM_t{i}') 
 				myFile.write(stri)
 			else:
 				argmaxs = np.argmax(values[leaf_nodes][:,0], axis=1).reshape(-1,1)
 				leaf_nodes_idx = np.asarray(np.nonzero(leaf_nodes)).T
 				leaf_nodes = np.concatenate((leaf_nodes_idx, argmaxs), axis=1)
-				stri = create_matrices.createMatrix('int', f'leaf_nodes_t{i}', leaf_nodes, 'N_LEAVES_t{i}', '2') 
+				leaf_node_mat = np.concatenate((leaf_nodes_idx, argmaxs), axis=1)
+				leaf_node_values = values[leaf_nodes][:,0].reshape(n_leaves, -1)
+				leaf_node_mat = np.concatenate((leaf_node_mat, leaf_node_values), axis=1)
+				stri = create_matrices.createMatrix('int', f'leaf_nodes_t{i}', leaf_node_mat, f'N_LEAVES_t{i}', '2+VALUES_DIM')
 				myFile.write(stri)
-		
-			
-		
+
+	
 		if self.estimator.is_regr == False:
 			stri = create_matrices.createArray("int", "target_classes", target_classes, 'N_CLASS')
 			myFile.write(stri)
