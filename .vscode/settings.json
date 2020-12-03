@@ -1,7 +1,7 @@
 {
-    "python.pythonPath": "C:\\Programs\\Anaconda3\\envs\\env-DeskLM-37\\python.exe"//,
-    "python.linting.pylintArgs": ["--generated-members"]
-				//"terminal.integrated.shellArgs.windows": ["/K", "C:\\Programs\\Anaconda3\\Scripts\\activate.bat C:\\Programs\\Anaconda3.2019 & conda activate env-DeskLM-37"]
+    "python.pythonPath": "C:\\Programs\\Anaconda3\\envs\\env-DeskLM-37\\python.exe",
+    //"python.linting.pylintArgs": ["--generated-members"]
+				"terminal.integrated.shellArgs.windows": ["/K", "C:\\Programs\\Anaconda3\\Scripts\\activate.bat C:\\Programs\\Anaconda3.2019 & conda activate env-DeskLM-37"]
 
     //"terminal.integrated.shell.windows": "C:\\Windows\\System32\\cmd.exe"
 }
