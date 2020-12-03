@@ -2,7 +2,7 @@
 #define PPPARAMS_H
 
 #ifndef N_FEATURE
-#define N_FEATURE 8
+#define N_FEATURE 1
 #endif
 
 #ifndef N_ORIG_FEATURE
