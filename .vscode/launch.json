@@ -19,7 +19,8 @@
             "args": [
                 "-d",
 
-                "input/ds_heart.json",
+                //"input/ds_heart.json",
+                "input/ds_heart_full.json",
                 //"input/ds_peugeot_207_01.json",
                 //"input/ds_nrg.json",
                 //"input/ds_ads.json",

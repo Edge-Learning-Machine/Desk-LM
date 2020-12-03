@@ -1,0 +1,6 @@
+{
+    "path": "./datasets/test2feat_scalable.csv",
+    "test_size": 0.1,
+				"select_all_columns":true,
+    "target_column":"target"
+}
