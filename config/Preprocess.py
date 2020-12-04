@@ -52,11 +52,12 @@ class Preprocess(object):
                     raise ValueError(error.errors['preprocess_config'])
 
     def parse(self, jsonData):
-        if jsonData['scale']!=None:
-            for scaler in jsonData['scale']:
-                if scaler in possible_scalers:
-                    self.scalers.append(possible_scalers[scaler])
-                else:
-                    print(f'Scaler: {scaler}, not recognized')
+        if 'scale' in jsonData:
+            if jsonData['scale']!=None:
+                for scaler in jsonData['scale']:
+                    if scaler in possible_scalers:
+                        self.scalers.append(possible_scalers[scaler])
+                    else:
+                        print(f'Scaler: {scaler}, not recognized')
         if 'pca_values' in jsonData:
             self.pca_values = jsonData['pca_values']

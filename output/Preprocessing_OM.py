@@ -17,22 +17,28 @@ def savePPParams(scaler, reduce_dims, estimator):
         elif isinstance(scaler, preprocessing.MinMaxScaler):
             mx = scaler.min_
 
-    if reduce_dims == None:
-        pca_components = np.identity(estimator.dataset.X.shape[1])
-    else:
+    n_feature = estimator.dataset.X.shape[1]   
+    if reduce_dims != None:
         pca_components = reduce_dims.components_
+        pca_means = reduce_dims.mean_
+        n_orig_feature = pca_components.shape[1]
+    else:
+        n_orig_feature = n_feature
 
     myFile = open(f"{outdirI}PPParams.h","w+")
     myFile.write(f"#ifndef PPPARAMS_H\n")
     myFile.write(f"#define PPPARAMS_H\n\n")
 
     myFile.write(f"#ifndef N_FEATURE\n")
-    myFile.write(f"#define N_FEATURE {pca_components.shape[0]}\n")
+    myFile.write(f"#define N_FEATURE {n_feature}\n")
     myFile.write(f"#endif\n\n")
     myFile.write(f"#ifndef N_ORIG_FEATURE\n")
-    myFile.write(f"#define N_ORIG_FEATURE {pca_components.shape[1]}\n")
+    myFile.write(f"#define N_ORIG_FEATURE {n_orig_feature}\n")
     myFile.write(f"#endif\n\n")
-    myFile.write(f"extern float pca_components[N_FEATURE][N_ORIG_FEATURE];\n")
+    if reduce_dims != None:
+        myFile.write(f"#define DO_PCA 1\n")
+        myFile.write(f"extern float pca_components[N_FEATURE][N_ORIG_FEATURE];\n")
+        myFile.write(f"extern float pca_means[N_ORIG_FEATURE];\n")
     myFile.write(f"\n")
 
     if scaler!=None:
@@ -63,9 +69,12 @@ def savePPParams(scaler, reduce_dims, estimator):
     import sys
     sys.path.insert(1, 'utils')
     import create_matrices
-    stri = create_matrices.createMatrix('float', 'pca_components', pca_components, 'N_FEATURE', 'N_ORIG_FEATURE')
-    myFile.write(stri)
-    myFile.write(f"\n")
+    if reduce_dims != None:
+        stri = create_matrices.createMatrix('float', 'pca_components', pca_components, 'N_FEATURE', 'N_ORIG_FEATURE')
+        myFile.write(stri)
+        stri = create_matrices.createArray('float', "pca_means", pca_means, 'N_ORIG_FEATURE')
+        myFile.write(stri)
+        myFile.write(f"\n")
 
     if scaler!=None:
         if isinstance(scaler, preprocessing.StandardScaler):

@@ -157,7 +157,7 @@ class ELM(object):
                         if self.output.dataset_test_size == 1:
                             omgr.OutputMgr.saveTestingSet(X_test, y_test, self.estimator)
                         elif self.output.dataset_test_size < 1:
-                            n_tests = int(y_test * self.output.dataset_test_size.shape[0])
+                            n_tests = int(y_test.shape[0] * self.output.dataset_test_size)
                             omgr.OutputMgr.saveTestingSet(X_test[0:n_tests], y_test[0:n_tests], self.estimator)
                         elif self.output.dataset_test_size != None:
                             omgr.OutputMgr.saveTestingSet(X_test[0:self.output.dataset_test_size].shape[0], y_test[0:self.output.dataset_test_size].shape[0], self.estimator)
