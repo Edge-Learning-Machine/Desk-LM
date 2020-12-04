@@ -133,7 +133,7 @@ The .json file exposes the following properties:
   - elm/include, for .h files
   - elm/model, for models, such as the ANN .h5 file
 - is_dataset_test, if files for a whole dataset test on the target devices are to be prepared, default: no dataset test (i.e., one shot estimation only)
-- dataset_test_size, sets a limit to the number of testing labels to be exported for the dataset test. Can be either int (number of labels) or float (0-1), default: 1
+- dataset_test_size, sets a limit to the number of testing records to be exported for the dataset test. Can be either int (number of records) or float (0-1 - percentage of the desktop test set), default: 1
 - training_set_cap, for k-NN, sets a limit to the number of training samples to be exported for the k-NN estimation. Can be either int (number of samples) or float (0-1), default: no cap 
 
 #### Prediction configuration
