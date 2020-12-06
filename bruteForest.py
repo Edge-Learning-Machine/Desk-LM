@@ -6,10 +6,24 @@ import sys
 import sklearn as skl
 import logger as lg
 import error as error
+import matplotlib.pyplot as plt
+from matplotlib import pyplot
+from mpl_toolkits.mplot3d import Axes3D
 
+
+trees_arr = []
+mDepth_arr = []
+rate_arr = []
+hDim_arr = []
+cDim_arr = []
+
+tempRate = 0
+tempHDim = 0 
+tempCDim = 0
 
 class ELM(object):
 
+		
 	def __init__(self, args):
 		self.args = args
 		self.predict = None
@@ -20,6 +34,8 @@ class ELM(object):
 		self.output = None
 		self.training_set_cap = None
 
+
+		
                 
 		sys.path.insert(1, 'config')
 		if self.args.predict != None:
@@ -100,21 +116,26 @@ class ELM(object):
 
 			import sklearn.metrics as metrics
 			
-			st = open("statsFile.txt", "a")
+			st = open("statsFile.csv", "a")
+			global tempRate
 			
 			if hasattr(self.modelselection, 'metrics_average'):
 				score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred, average=self.modelselection.metrics_average)
-				st.write(f'{self.modelselection.metrics}, average={self.modelselection.metrics_average} in testing set: {score}')
+				tempRate += score
+				st.write(f'{score},')
 			else:
 				if hasattr(self.modelselection, 'is_RMSE'):
 					score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred, squared=not self.modelselection.is_RMSE)
 					pref = ''
 					if self.modelselection.is_RMSE:
 						pref='root_'
-					st.write(f'{pref}{self.modelselection.metrics} in testing set: {score}')
+					tempRate += score
+					st.write(f'{score},')
 				else:
 					score = getattr(metrics, self.modelselection.metrics)(y_test, y_pred)
-					st.write(f'{self.modelselection.metrics} in testing set: {score}')
+					
+					tempRate += score
+					st.write(f'{score},')
                 #Add/change directly above if you want a different metrics (e.g., r2_score)
 
 			st.close()
@@ -205,8 +226,8 @@ if __name__ == '__main__':
 	parser.add_argument('--store', action="store_true")
 	args = parser.parse_args()
     
-	st = open("statsFile.txt", "w")
-	st.write('#trees \t| Max_Depth\t| #Iteration\t| rate\t\t\t\t\t\t\t| H_Dim\t| C_Dim\t\n\n')
+	st = open("statsFile.csv", "w")
+	st.write('#trees, Max_Depth, #Iteration, rate, .H_Dim, .C_Dim\n')
 	st.close()
 	
 	print(f'Bruteforce to get stats about number of estimators and max depth')
@@ -215,22 +236,80 @@ if __name__ == '__main__':
 			buildJson(x,y)
 			for z in range(0,maxIter):
 			
+			
+			
 				print(f'Current: number {x}/{maxTrees}, depth {y}/{maxDepth}, iteration {z}/{maxIter}')
-				st = open("statsFile.txt", "a")
-				st.write(f'{x} \t| {y}\t\t| {z}\t\t| ')
+				st = open("statsFile.csv", "a")
+				st.write(f'{x}, {y}, {z},')
 				st.close()
 			
 				try:
 					elm = ELM(args)
 					elm.process()
 				
-					st = open("statsFile.txt", "a")
+					st = open("statsFile.csv", "a")
 				
 					from pathlib import Path
 					hdim = Path('C:\\Github Repo\\Desk-LM\\output_test\\dlm\\include\\RF_Params.h').stat().st_size
 					cdim = Path('C:\\Github Repo\\Desk-LM\\output_test\\dlm\\source\\RF_Params.c').stat().st_size
-				
-					st.write(f'\t| {hdim}\t| {cdim} \n')
+					
+					tempCDim += cdim
+					tempHDim += hdim
+					st.write(f'{hdim}, {cdim} \n')
 					st.close()
 				except ValueError as error:
 					print(error)
+			
+			#append stat to array
+			tempCDim = tempCDim / maxIter
+			tempHDim = tempHDim / maxIter
+			tempRate = tempRate / maxIter
+			
+			trees_arr.append(x)
+			mDepth_arr.append(y)
+			rate_arr.append(tempRate)
+			cDim_arr.append(tempCDim)
+			hDim_arr.append(tempHDim)
+			
+			tempRate = 0
+			tempHDim = 0 
+			tempCDim = 0
+			
+	
+	#plot the data
+	
+	#trees_arr, mDepth_arr = np.meshgrid(trees_arr, mDepth_arr)
+	
+
+	fig = pyplot.figure()
+	ax = Axes3D(fig)
+
+
+	ax.scatter(trees_arr, mDepth_arr, rate_arr)
+	ax.set_xlabel('# Tree')
+	ax.set_ylabel('Max Depth')
+	ax.set_zlabel('Rate')
+	#pyplot.show()
+	pyplot.savefig('score.png')
+	
+	fig2 = pyplot.figure()
+	ax2 = Axes3D(fig2)
+
+	ax2.scatter(trees_arr, mDepth_arr, hDim_arr)
+	ax2.set_xlabel('# Tree')
+	ax2.set_ylabel('Max Depth')
+	ax2.set_zlabel('.h Size')
+	
+	pyplot.savefig('h_dim.png')
+	#pyplot.show()
+	
+	fig3 = pyplot.figure()
+	ax3 = Axes3D(fig3)
+	ax3.scatter(trees_arr, mDepth_arr, cDim_arr)
+	ax3.set_xlabel('# Tree')
+	ax3.set_ylabel('Max Depth')
+	ax3.set_zlabel('.c Size')
+	
+	pyplot.savefig('c_dim.png')
+	#pyplot.show()
+
