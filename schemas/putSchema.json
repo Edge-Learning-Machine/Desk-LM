@@ -18,7 +18,12 @@
             "items": { "type": "string" }
         },
         "filter": { "type": "string" },
-        "target": { "type": "string" }
+        "tags": { 
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
     },
     "allOf": [
         {
@@ -42,7 +47,7 @@
                 "properties": { "mode" : { "const": "measurify" } }
             },
             "then": {
-                "required": ["mode", "feature", "items", "filter", "target"]
+                "required": ["mode", "feature", "items", "filter", "tags"]
             }
         }
     ],

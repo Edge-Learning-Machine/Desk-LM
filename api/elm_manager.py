@@ -61,7 +61,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
 
         # result
         result = {
-            'best_params': elm.estimator.best_params,
+            'best_params': str(elm.estimator.best_params),
             'metrics': process[0],
             'score': process[-1]
         }
@@ -146,7 +146,7 @@ def elm_manager(app, content, database, doc, mode, **kargs):
 
         # result
         result = {
-            'best_params': elm.estimator.best_params,
+            'best_params': str(elm.estimator.best_params),
             'metrics': process[0],
             'score': process[-1]
         }

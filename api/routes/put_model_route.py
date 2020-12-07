@@ -101,10 +101,12 @@ def put_model_route(request, database, id, app):
             for item in res['items']:
                 if item['name'] in content['items']:
                     columns.append(item['name'])
+            columns.append('target')
 
             ds = {}
             for item in res['items']:
                 ds[item['name']] = []
+            ds['target'] = []
 
             params = {}
             params['filter'] = content['filter']
@@ -116,10 +118,12 @@ def put_model_route(request, database, id, app):
                     for sample in document['samples']:
                         for i, v in enumerate(sample['values']):
                             ds[res['items'][i]['name']].append(v)
+                        ds['target'].append(document['tags'][0])
                 if not response['nextPage']: break 
                 params['page'] += 1
 
             dataset = pd.DataFrame(ds, columns=columns)
+            dataset[['target']] = dataset[['target']].apply(lambda col: pd.Categorical(col).codes)
 
             # webhook
             if doc['webhook']:
@@ -141,7 +145,7 @@ def put_model_route(request, database, id, app):
         elm_thread_measurify = threading.Thread(
             target=elm_manager, 
             args=(app, content, database, doc, 'measurify', ),
-            kwargs={'dataset':dataset, 'columns':columns, 'target':content['target'], 'webhook':doc['webhook'], 'headers':headers})
+            kwargs={'dataset':dataset, 'columns':columns, 'target':'target', 'webhook':doc['webhook'], 'headers':headers})
         elm_thread_measurify.start()
 
         return answer(doc)
