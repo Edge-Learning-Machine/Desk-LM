@@ -18,8 +18,9 @@
             "program": "${workspaceFolder}/main.py",
             "args": [
                 "-d",
-
-                "input/ds_heart.json",
+                //"input/ds_heart.json",
+                //"input/ds_test2feat_scalable2.json",
+                "input/ds_heart_full.json",
                 //"input/ds_peugeot_207_01.json",
                 //"input/ds_nrg.json",
                 //"input/ds_ads.json",
@@ -36,7 +37,8 @@
 
                 //"input/est_tripleES.json",
                 "-p",
-                "input/pp_1.json",
+                //"input/pp_1.json",
+                "input/pp_solo_MMscale.json",
                 "-s",
                 "input/ms_2.json",
                 ///"input/ms_2_no_sco.json",
@@ -49,6 +51,7 @@
                 //"--predict",
                 //"input/pr_heart_svm_no_ppms.json"
                 //"input/pr_heart_svm.json"
+                //"input/pr_heart_dt_10.json"
                 //"input/pr_heart_svm_mle.json"
                 //"input/pr_ads_tes.json"
 

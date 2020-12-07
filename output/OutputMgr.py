@@ -117,9 +117,9 @@ class OutputMgr(metaclass=abc.ABCMeta):
         myFile.write(f"#define TESTINGSET_H\n\n")
 
         myFile.write(f"#define N_TEST {y_test.shape[0]}\n\n")
-        myFile.write(f"#ifndef N_FEATURE\n")
+        '''myFile.write(f"#ifndef N_FEATURE\n")
         myFile.write(f"#define N_FEATURE {X_test.shape[1]}\n")
-        myFile.write(f"#endif\n\n")
+        myFile.write(f"#endif\n\n")'''
         myFile.write(f"#ifndef N_ORIG_FEATURE\n")
         myFile.write(f"#define N_ORIG_FEATURE {X_test.shape[1]}\n") # Is this value correct??? xxx
         myFile.write(f"#endif\n\n")
@@ -128,7 +128,7 @@ class OutputMgr(metaclass=abc.ABCMeta):
         else:
             type_s = 'int'
         myFile.write(f"extern {type_s} y_test[N_TEST];\n")
-        myFile.write(f"extern float X_test[N_TEST][N_FEATURE];\n")
+        myFile.write(f"extern float X_test[N_TEST][N_ORIG_FEATURE];\n")
         
         #
         #if cfg.normalization!=None and cfg.regr and cfg.algo.lower() != 'dt':
@@ -157,7 +157,7 @@ class OutputMgr(metaclass=abc.ABCMeta):
         stri = create_matrices.createArray(type_s, "y_test", np.reshape(y_test, (y_test.shape[0], )), 'N_TEST')
         myFile.write(stri)
         
-        stri = create_matrices.createMatrix('float', 'X_test', X_test.values, 'N_TEST', 'N_FEATURE') # changed by FB
+        stri = create_matrices.createMatrix('float', 'X_test', X_test.values, 'N_TEST', 'N_ORIG_FEATURE') # changed by FB
         myFile.write(stri)
         myFile.close()
 
@@ -168,7 +168,7 @@ class OutputMgr(metaclass=abc.ABCMeta):
         myFile = open(f"{outdirI}training_set.h","w+")
         myFile.write(f"#define N_TRAIN {y_train.shape[0]}\n\n")
         myFile.write(f"#ifndef N_FEATURE\n")
-        myFile.write(f"#define N_FEATURE {X_train.shape[1]}\n")
+        myFile.write(f"#define N_ORIG_FEATURE {X_train.shape[1]}\n")
         myFile.write(f"#endif\n\n")
 
         if estimator.is_regr:
