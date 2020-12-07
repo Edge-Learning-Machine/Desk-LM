@@ -87,6 +87,13 @@ class ELM(object):
             else:
                 p = m.predict(self.predict.samples)
             print(f'Predicted values: {p}')
+
+            do_dbg=True
+            if do_dbg:
+                sys.path.insert(1, '_utils_')
+                import debug as dbg
+                dbg.debug_prediction(self.predict.samples, m)
+
             return p
         else:
             from sklearn.model_selection import train_test_split
