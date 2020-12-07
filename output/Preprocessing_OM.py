@@ -44,12 +44,12 @@ def savePPParams(scaler, reduce_dims, estimator):
     if scaler!=None:
         if isinstance(scaler, preprocessing.StandardScaler):
             myFile.write(f"#define STANDARD_SCALING\n\n")
-            myFile.write(f"extern float s_x[N_ORIG_FEATURE];\n")
-            myFile.write(f"extern float u_x[N_ORIG_FEATURE];\n")
+            myFile.write(f"extern float s_x[PCA_N_ORIG_FEATURE];\n")
+            myFile.write(f"extern float u_x[PCA_N_ORIG_FEATURE];\n")
         elif isinstance(scaler, preprocessing.MinMaxScaler):
             myFile.write(f"#define MINMAX_SCALING\n\n")
-            myFile.write(f"extern float s_x[N_ORIG_FEATURE];\n")
-            myFile.write(f"extern float m_x[N_ORIG_FEATURE];\n")
+            myFile.write(f"extern float s_x[PCA_N_ORIG_FEATURE];\n")
+            myFile.write(f"extern float m_x[PCA_N_ORIG_FEATURE];\n")
 
     '''
     if cfg.normalization!=None and cfg.regr and cfg.algo.lower() != 'dt':

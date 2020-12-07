@@ -29,7 +29,7 @@ class DecisionTree_OM(OutputMgr):
             myFile.write(f"#define N_LEAVES {n_leaves}\n\n")
         else:
             myFile.write(f"#define N_CLASS 0\n\n")
-        myFile.write(f"#define VALUES_DIM {values.shape[2]}\n\n")
+            myFile.write(f"#define VALUES_DIM {values.shape[2]}\n\n")
         myFile.write(f"#define N_NODES {n_nodes}\n\n")
 
         myFile.write(f"extern int children_left[N_NODES];\n")
@@ -40,7 +40,7 @@ class DecisionTree_OM(OutputMgr):
             myFile.write(f"extern int values[N_NODES][VALUES_DIM];\n")
         else:
             myFile.write(f"extern int target_classes[N_CLASS];\n")
-            myFile.write(f"extern int leaf_nodes[N_LEAVES][2+VALUES_DIM];\n")
+            myFile.write(f"extern int leaf_nodes[N_LEAVES][2];\n")
         myFile.write(f"\n#endif")
         myFile.close()
 
@@ -71,9 +71,7 @@ class DecisionTree_OM(OutputMgr):
             myFile.write(stri)
             argmaxs = np.argmax(values[leaf_nodes][:,0], axis=1).reshape(-1,1)
             leaf_nodes_idx = np.asarray(np.nonzero(leaf_nodes)).T
-            leaf_node_mat = np.concatenate((leaf_nodes_idx, argmaxs), axis=1)
-            leaf_node_values = values[leaf_nodes][:,0].reshape(n_leaves, -1)
-            leaf_node_mat = np.concatenate((leaf_node_mat, leaf_node_values), axis=1)
-            stri = create_matrices.createMatrix('int', 'leaf_nodes', leaf_node_mat, 'N_LEAVES', '2+VALUES_DIM') 
+            leaf_nodes = np.concatenate((leaf_nodes_idx, argmaxs), axis=1)
+            stri = create_matrices.createMatrix('int', 'leaf_nodes', leaf_nodes, 'N_LEAVES', '2') 
             myFile.write(stri)
         myFile.close()
