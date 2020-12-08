@@ -17,13 +17,13 @@ def savePPParams(scaler, reduce_dims, estimator):
         elif isinstance(scaler, preprocessing.MinMaxScaler):
             mx = scaler.min_
 
-    n_feature = estimator.dataset.X.shape[1]   
+    n_orig_feature = estimator.dataset.X.shape[1]   
     if reduce_dims != None:
         pca_components = reduce_dims.components_
         pca_means = reduce_dims.mean_
-        n_orig_feature = pca_components.shape[1]
+        n_feature = pca_components.shape[0]
     else:
-        n_orig_feature = n_feature
+        n_feature = n_orig_feature
 
     myFile = open(f"{outdirI}PPParams.h","w+")
     myFile.write(f"#ifndef PPPARAMS_H\n")
