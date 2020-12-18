@@ -205,7 +205,7 @@ Please see [CONTRIBUTING.md](https://github.com/Edge-Learning-Machine/Desk-LM/bl
 
 
 Credits:
-- `Alessio Capello` for Random Forest implementation and refactoring;
+- `Alessio Capello` for Random Forest implementation;
 - `Gabriele Campodonico` for TripleES implementation;
 - `Laura Pisano` for TripleES implementation;
 
