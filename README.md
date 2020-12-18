@@ -3,6 +3,7 @@ Desk-LM is a python environment for training machine learning models (and make p
 
 - `Linear SVM`
 - `Decision Tree`
+- `Random Forest `
 - `K-NN`
 - `ANN`
 - `TripleES` Holt-Winters Triple Exponential Smoothing implementation for time series
@@ -201,6 +202,12 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://gi
 
 ## Contributing
 Please see [CONTRIBUTING.md](https://github.com/Edge-Learning-Machine/Desk-LM/blob/master/docs/CONTRIBUTING.md)
+
+
+Credits:
+- `Alessio Capello` for Random Forest implementation and refactoring;
+- `Gabriele Campodonico` for TripleES implementation;
+- `Laura Pisano` for TripleES implementation;
 
 ## Reference article for more infomation
 F., Sakr, F., Bellotti, R., Berta, A., De Gloria, "Machine Learning on Mainstream Microcontrollers," Sensors 2020, 20, 2638.
