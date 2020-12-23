@@ -1,3 +1,24 @@
+'''
+This script could be used to estimate the best parameters for a random forest (max depth and the number of trees).
+It use a brute force approach, so it could require a really long time to return you the data.
+
+Tree variables can be set in this script (search #config) to configure the max number of trees, the limit depth and the number of iteration for each couple of parameters.
+Those vars are: maxTrees, maxDepth, maxIter.
+
+This script will return you (for each iteration on each couple) those values: accuracy, .c size, .h size in a complete csv file.
+
+IMPORTANT: just remember that max depth = 0 is actually a limitless depth!
+
+Usage: the usage is pretty similiar to the main script, but the estimator json MUST be input\est_rf_c_brute.json 
+It will be overwritten each iteration and it will not be restored when the script ends.
+
+bruteforest.py -d <dataset_config_file> -e input\est_rf_c_brute.json -p <preprocessing_config_file> -s <model_selection_config_file>
+
+
+
+
+'''
+
 import argparse
 import numpy as np
 import os
@@ -212,6 +233,7 @@ def buildJson (est,depth):
 
 if __name__ == '__main__':
 
+	#config
 	maxTrees = 21
 	maxDepth = 51
 	maxIter = 10
@@ -277,7 +299,7 @@ if __name__ == '__main__':
 			
 	
 	#plot the data
-	
+'''
 	#trees_arr, mDepth_arr = np.meshgrid(trees_arr, mDepth_arr)
 	
 
@@ -312,4 +334,4 @@ if __name__ == '__main__':
 	
 	pyplot.savefig('c_dim.png')
 	#pyplot.show()
-
+'''
