@@ -108,8 +108,14 @@ def put_model_route(request, database, id, app):
                 ds[item['name']] = []
             ds['target'] = []
 
+            # filter
+            filter = json.loads(content['filter'])
+            filter['$or'] = []
+            for tag in content['tags']:
+                filter['$or'].append({"tags":tag})
+
             params = {}
-            params['filter'] = content['filter']
+            params['filter'] = json.dumps(filter)
             params['page'] = 1
 
             while True:

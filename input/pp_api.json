@@ -1,8 +1,5 @@
 {
     "scale": [
         "StandardScaler"
-    ],
-    "pca_values": [
-        "mle"
     ]
 }

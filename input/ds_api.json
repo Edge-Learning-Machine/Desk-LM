@@ -1,11 +1,10 @@
 {
-    "path": "datasets/c1950840-c738-4149-8524-3c86baa9384c.csv",
-    "test_size": 0.2,
+    "path": "datasets/a1ffe532-d531-4f52-a906-339bb0432375.csv",
     "target_column": "target",
     "select_columns": [
-        "t_est",
-        "t_int",
-        "h",
+        "temp_est",
+        "temp_int",
+        "hum_int",
         "target"
     ]
 }
