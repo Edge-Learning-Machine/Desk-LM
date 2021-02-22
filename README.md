@@ -36,7 +36,7 @@ The command line expects the path to .json files specifying:
 #### Dataset configuration
 **-d <path_to_dataset_config_file>**
 
-The .json file exposes the following properties:
+The .json config file exposes the following properties:
 - path, path to the .csv dataset file 
 - skip_rows, number of rows to be skipped before the column names
 - select_columns, array of names of the columns to be selected as features (all the others are discarded)
@@ -52,7 +52,7 @@ The .json file exposes the following properties:
 #### Estimator configuration
 **-e <path_to_estimator_config_file>**
 
-The .json file exposes the following properties:
+The .json config file exposes the following properties:
 - estimator, name of the estimator. If not differently stated, all estimators are implemented through sk-learn. Currently supported estimators are:
   - KNeighborsClassifier
   - KNeighborsRegressor
@@ -95,7 +95,7 @@ Please refer to sk-learn and keras documentation for the details on the configur
 #### Preprocessing configuration
 **-p <path_to_preprocessing_config_file>**
 
-The .json file exposes the following properties:
+The .json config file exposes the following properties:
 - scale, array of strings specifying scalers (currently supported scalers: "StandardScaler", "MinMaxScaler"), default: no scaler
 - pca_values, array of numbers (integer or float between 0 and 1) representing the principal components. It is possible to specify also the string "mle", default: no PCA 
 
@@ -106,7 +106,7 @@ Please refer to sk-learn documentation for further details.
 #### Model selection configuration
 **-s <path_to_model_selection_config_file>**
 
-The .json file exposes the following properties:
+The .json config file exposes the following properties:
 - cv, cross validation schema, default: None, to use the default 5-fold cross validation 
 - scoring, scoring method for cross validation
   - Regression problem, possible values:
