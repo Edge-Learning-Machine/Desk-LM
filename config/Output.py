@@ -56,7 +56,7 @@ class Output(object):
                 self.is_dataset_test = jsonData['is_dataset_test']
             if 'dataset_test_size' in jsonData:
                 self.dataset_test_size = jsonData['dataset_test_size']
-            if 'training_set_size' in jsonData:
+            if 'training_set_cap' in jsonData:
                 self.training_set_cap = jsonData['training_set_cap']
         except Exception as err:
             template = "An exception of type {0} occurred. Arguments: {1!r}"
