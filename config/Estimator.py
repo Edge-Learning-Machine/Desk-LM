@@ -115,7 +115,8 @@ class Estimator(object):
 	def __getstate__(self):
 		state = self.__dict__.copy()
 		# Don't pickle baz
-		del state["output_manager"]
+		if "output_manager" in state:  # if not present, cause a crash on startup because of recursive call on the same dict
+			del state["output_manager"]
 		return state
 
 '''
